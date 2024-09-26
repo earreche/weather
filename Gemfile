@@ -52,11 +52,12 @@ gem 'httparty', '~> 0.21.0'
 
 group :development, :test do
   gem 'byebug', '~> 11.1.3'
+  gem 'dotenv-rails'
   gem 'rspec-html-matchers', '~> 0.10.0'
   gem 'rspec-rails', '~> 5.1', '>= 5.1.2'
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
-  gem 'dotenv-rails'
+  gem 'webmock', '~> 3.11.2'
 end
 
 group :development do

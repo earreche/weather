@@ -37,3 +37,6 @@
 # Ignore env config files locally
 .env
 .env.test.local
+
+# Ignore byebug history
+.byebug_history

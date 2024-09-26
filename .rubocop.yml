@@ -19,6 +19,9 @@ RSpec/MultipleExpectations:
 RSpec/NamedSubject:
   Enabled: false
 
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
 Layout/LineLength:
   Max: 100
   # To make it possible to copy or click on URIs in the code, we allow lines
@@ -31,6 +34,12 @@ Layout/LineLength:
 Metrics/BlockLength:
   CountComments: false
   Max: 25
+
+Metrics/MethodLength:
+  CountComments: false
+  Max: 24
+  Exclude:
+  - spec/support/mocks/weather_mocker.rb
 
 Style/Documentation:
   Enabled: false
