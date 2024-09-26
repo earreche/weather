@@ -55,7 +55,7 @@ group :development, :test do
   gem 'rspec-html-matchers', '~> 0.10.0'
   gem 'rspec-rails', '~> 5.1', '>= 5.1.2'
   gem 'rubocop-rails'
-  # gem 'rubocop-rspec'
+  gem 'rubocop-rspec'
 end
 
 group :development do
