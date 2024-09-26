@@ -56,6 +56,7 @@ group :development, :test do
   gem 'rspec-rails', '~> 5.1', '>= 5.1.2'
   gem 'rubocop-rails'
   gem 'rubocop-rspec'
+  gem 'dotenv-rails'
 end
 
 group :development do
