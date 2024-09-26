@@ -22,6 +22,9 @@ RSpec/NamedSubject:
 RSpec/MultipleMemoizedHelpers:
   Enabled: false
 
+RSpec/AnyInstance:
+  Enabled: false
+
 Layout/LineLength:
   Max: 100
   # To make it possible to copy or click on URIs in the code, we allow lines
