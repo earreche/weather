@@ -11,6 +11,7 @@ module Weather
 
       redis_value = client.query_by_position(latittude: latittude, longitude: longitude)
       Rails.cache.write(cache_name, redis_value, expires_in: 1.hour)
+      redis_value
     end
 
     private
