@@ -5,5 +5,5 @@ Rails.application.routes.draw do
 
   get '/query_by_position', to: 'public#query_by_position'
 
-  root "public#index"
+  root 'public#index'
 end

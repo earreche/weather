@@ -20,7 +20,6 @@ export default class extends Controller {
   
   success(pos) {
     const crd = pos.coords;
-    console.log(pos);
     fetchWithTurbo(`/query_by_position?lat=${crd.latitude}&long=${crd.longitude}`);
   }
 
