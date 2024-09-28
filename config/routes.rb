@@ -4,6 +4,8 @@ Rails.application.routes.draw do
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   get '/query_by_position', to: 'public#query_by_position'
+  get '/query_by_city', to: 'public#query_by_city'
+  get '/states', to: 'public#states'
 
   root 'public#index'
 end

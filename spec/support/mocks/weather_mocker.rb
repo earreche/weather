@@ -4,7 +4,7 @@ require 'rails_helper'
 
 class WeatherMocker
   include RSpec::Mocks::ExampleMethods
-  BASE_API_URL = 'https://api.openweathermap.org/data/3.0/onecall/'
+  BASE_API_URL = 'https://api.openweathermap.org/'
   WEATHER_API_ACCESS_TOKEN = 'WEATHER_API_ACCESS_TOKEN'
 
   def mock_query_by_position_with_success(latitude:, longitude:)
@@ -20,13 +20,10 @@ class WeatherMocker
     JSON
 
     WebMock
-      .stub_request(:get, "#{BASE_API_URL}overview?lat=#{latitude}&lon=#{longitude}&#{app_id}")
+      .stub_request(:get, "#{BASE_API_URL}data/3.0/onecall/overview?" \
+                          "lat=#{latitude}&lon=#{longitude}&#{app_id}")
       .with(body: '', headers: default_api_request_headers)
       .to_return(status: 200, body: response_body, headers: default_response_headers)
-  end
-
-  def app_id
-    "appid=#{WEATHER_API_ACCESS_TOKEN}"
   end
 
   def mock_query_by_position_with_lat_out_of_range(latitude:, longitude:)
@@ -41,10 +38,40 @@ class WeatherMocker
     JSON
 
     WebMock
-      .stub_request(:get, "#{BASE_API_URL}overview?lat=#{latitude}&lon=#{longitude}&#{app_id}")
+      .stub_request(:get, "#{BASE_API_URL}data/3.0/onecall/overview?" \
+                          "lat=#{latitude}&lon=#{longitude}&#{app_id}")
       .with(body: '', headers: default_api_request_headers)
       .to_return(status: 400, body: response_body, headers: default_response_headers)
   end
+
+  def mock_query_position_for_city_with_success(city:, country:)
+    response_body = <<~JSON
+      [{
+        "city": "#{city}",
+        "country": "#{country}",
+        "lat": -34.901112,
+        "lon": -56.164532
+      }]
+    JSON
+
+    WebMock
+      .stub_request(:get, "#{BASE_API_URL}geo/1.0/direct?q=#{city},#{country}&limit=1&#{app_id}")
+      .with(body: '', headers: default_api_request_headers)
+      .to_return(status: 200, body: response_body, headers: default_response_headers)
+  end
+
+  def mock_query_position_for_city_with_no_result(city:, country:)
+    response_body = <<~JSON
+      []
+    JSON
+
+    WebMock
+      .stub_request(:get, "#{BASE_API_URL}geo/1.0/direct?q=#{city},#{country}&limit=1&#{app_id}")
+      .with(body: '', headers: default_api_request_headers)
+      .to_return(status: 200, body: response_body, headers: default_response_headers)
+  end
+
+  private
 
   def default_api_request_headers(extra_params = {})
     {
@@ -59,5 +86,9 @@ class WeatherMocker
     {
       'Content-Type' => 'application/json'
     }.merge(extra_params)
+  end
+
+  def app_id
+    "appid=#{WEATHER_API_ACCESS_TOKEN}"
   end
 end
