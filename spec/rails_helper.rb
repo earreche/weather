@@ -7,6 +7,8 @@ require_relative '../config/environment'
 # Prevent database truncation if the environment is production
 abort('The Rails environment is running in production mode!') if Rails.env.production?
 require 'rspec/rails'
+require 'capybara/rails'
+require 'selenium/webdriver'
 # Add additional requires below this line. Rails is not loaded until this point!
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
@@ -23,6 +25,11 @@ require 'rspec/rails'
 # require only the support files necessary.
 #
 Dir[Rails.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
+
+WebMock.disable_net_connect!(
+  allow_localhost: true,
+  allow: ['googlechromelabs.github.io', 'https://storage.googleapis.com']
+)
 
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove these lines.
@@ -64,4 +71,46 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  config.after(:each, type: :feature) do
+    default_url_options[:host] = 'www.example.com'
+    default_url_options.delete :protocol
+  end
+end
+
+Capybara.register_driver :chrome do |app|
+  chrome_args =
+    if ENV['HEADLESS_CHROME'] == 'true'
+      {
+        args: [
+          '--headless',
+          '--disable-gpu',
+          '--test-type',
+          '--ignore-certificate-errors',
+          '--disable-popup-blocking',
+          '--disable-extensions',
+          '--enable-automation',
+          '--window-size=1024,768',
+          '--disable-site-isolation-trials',
+          '--no-sandbox'
+        ]
+      }
+    else
+      { args: [] }
+    end
+
+  options = Selenium::WebDriver::Chrome::Options.new(**chrome_args)
+
+  Capybara::Selenium::Driver.new(
+    app,
+    browser: :chrome,
+    options: options
+  )
+end
+
+Capybara.configure do |config|
+  config.default_driver = :chrome unless ENV['STORY_TELLING'] == 'false'
+  config.javascript_driver = :chrome
+  config.server = :puma, { Silent: true }
+  config.server_host = '0.0.0.0'
 end

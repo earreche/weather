@@ -3,7 +3,8 @@ import { fetchWithTurbo } from '../modules/utils/fetchWithTurbo';
 
 const options = {
   enableHighAccuracy: true,
-  maximumAge: 0
+  maximumAge: 0,
+  timeout: 5000 // 5 seconds timeout
 };
 
 export default class extends Controller {
