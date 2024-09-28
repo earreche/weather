@@ -7,17 +7,27 @@ const options = {
   timeout: 5000 // 5 seconds timeout
 };
 
+const mockedResponse = {
+  coords: {
+    latitude: '-34.901112',
+    longitude: '-56.164532'
+  }
+};
+
 export default class extends Controller {
-  static values = { url: String }
+  static values = { envirorment: String }
 
   connect() {
     this.getLocation();
   }
-
-  getLocation() {
-    navigator.geolocation.getCurrentPosition(this.success.bind(this), this.error, options);
-  }
   
+  getLocation() {
+    if (this.envirormentValue != 'test'){
+      navigator.geolocation.getCurrentPosition(this.success.bind(this), this.error, options);
+    }else{
+      this.success(mockedResponse)
+    }
+  }
   
   success(pos) {
     const crd = pos.coords;
