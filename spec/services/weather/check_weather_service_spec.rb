@@ -3,20 +3,20 @@
 require 'rails_helper'
 
 RSpec.describe Weather::CheckWeatherService do
-  let(:latittude_from_uruguay) { -34.901112 }
+  let(:latitude_from_uruguay) { -34.901112 }
   let(:longitude_from_uruguay) { -56.164532 }
-  let(:latittude) { latittude_from_uruguay }
+  let(:latitude) { latitude_from_uruguay }
   let(:longitude) { longitude_from_uruguay }
-  let(:cache_name) { "#{latittude}, #{longitude}" }
+  let(:cache_name) { "#{latitude}, #{longitude}" }
   let(:response) { { weather_overview: 'The current weather is super nice' } }
 
   describe '#query_by_position' do
-    subject { described_class.new.query_by_position(latittude: latittude, longitude: longitude) }
+    subject { described_class.new.query_by_position(latitude: latitude, longitude: longitude) }
 
     context 'when a parameter is missing' do
-      let(:latittude_is_missing) { [true, false].sample }
-      let(:latittude) { latittude_is_missing ? [nil, ''].sample : latittude_from_uruguay }
-      let(:longitude) { latittude_is_missing ? longitude_from_uruguay : [nil, ''].sample }
+      let(:latitude_is_missing) { [true, false].sample }
+      let(:latitude) { latitude_is_missing ? [nil, ''].sample : latitude_from_uruguay }
+      let(:longitude) { latitude_is_missing ? longitude_from_uruguay : [nil, ''].sample }
 
       it { expect { subject }.to raise_error(ArgumentError) }
     end
@@ -38,7 +38,7 @@ RSpec.describe Weather::CheckWeatherService do
       before do
         Rails.cache.clear
         allow_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
-          latittude: latittude, longitude: longitude
+          latitude: latitude, longitude: longitude
         ).and_return(response)
         allow(Rails.cache).to receive(:write)
       end

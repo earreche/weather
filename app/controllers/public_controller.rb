@@ -15,7 +15,7 @@ class PublicController < ApplicationController
 
   def check_weather_service
     Weather::CheckWeatherService.new.query_by_position(
-      latittude: permitted_params[:lat],
+      latitude: permitted_params[:lat],
       longitude: permitted_params[:long]
     )
   end

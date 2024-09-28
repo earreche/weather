@@ -25,19 +25,19 @@ RSpec.describe 'Public' do
     end
 
     context 'when parameters are sent' do
-      let(:latittude) { '-34.901112' }
+      let(:latitude) { '-34.901112' }
       let(:longitude) { '-56.164532' }
       let(:api_response) { { weather_overview: 'The current weather is super nice' } }
       let(:params) do
         {
-          lat: latittude,
+          lat: latitude,
           long: longitude
         }
       end
 
       it 'calls the weather API with correct parameters and returns ok' do
         expect_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
-          latittude: latittude, longitude: longitude
+          latitude: latitude, longitude: longitude
         ).and_return(api_response)
 
         expect(subject).to have_http_status(:ok)

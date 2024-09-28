@@ -7,10 +7,10 @@ class WeatherMocker
   BASE_API_URL = 'https://api.openweathermap.org/data/3.0/onecall/'
   WEATHER_API_ACCESS_TOKEN = 'WEATHER_API_ACCESS_TOKEN'
 
-  def mock_query_by_position_with_success(latittude:, longitude:)
+  def mock_query_by_position_with_success(latitude:, longitude:)
     response_body = <<~JSON
       {
-        "lat": #{latittude},
+        "lat": #{latitude},
         "lon": #{longitude},
         "tz": "-03:00",
         "date": "2024-09-26",
@@ -20,7 +20,7 @@ class WeatherMocker
     JSON
 
     WebMock
-      .stub_request(:get, "#{BASE_API_URL}overview?lat=#{latittude}&lon=#{longitude}&#{app_id}")
+      .stub_request(:get, "#{BASE_API_URL}overview?lat=#{latitude}&lon=#{longitude}&#{app_id}")
       .with(body: '', headers: default_api_request_headers)
       .to_return(status: 200, body: response_body, headers: default_response_headers)
   end
@@ -29,7 +29,7 @@ class WeatherMocker
     "appid=#{WEATHER_API_ACCESS_TOKEN}"
   end
 
-  def mock_query_by_position_with_lat_out_of_range(latittude:, longitude:)
+  def mock_query_by_position_with_lat_out_of_range(latitude:, longitude:)
     response_body = <<~JSON
       {
         "code": "400",
@@ -41,7 +41,7 @@ class WeatherMocker
     JSON
 
     WebMock
-      .stub_request(:get, "#{BASE_API_URL}overview?lat=#{latittude}&lon=#{longitude}&#{app_id}")
+      .stub_request(:get, "#{BASE_API_URL}overview?lat=#{latitude}&lon=#{longitude}&#{app_id}")
       .with(body: '', headers: default_api_request_headers)
       .to_return(status: 400, body: response_body, headers: default_response_headers)
   end

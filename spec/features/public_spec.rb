@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.feature 'Home Page' do
   let(:home_page) { HomePage.new }
   let(:api_mocker) { WeatherMocker.new }
-  let(:latittude) { '-34.901112' }
+  let(:latitude) { '-34.901112' }
   let(:longitude) { '-56.164532' }
 
   feature 'getting the weather for current location' do
@@ -23,7 +23,7 @@ RSpec.feature 'Home Page' do
       let(:response_api) { 'The current weather is super nice' }
 
       before do
-        api_mocker.mock_query_by_position_with_success(latittude: latittude, longitude: longitude)
+        api_mocker.mock_query_by_position_with_success(latitude: latitude, longitude: longitude)
       end
 
       it 'shows button for refreshing the weather after permission is given' do
