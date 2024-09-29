@@ -5,6 +5,7 @@ require 'rails_helper'
 RSpec.describe Weather::CheckWeatherForCityService do
   let(:latitude_from_uruguay) { -34.901112 }
   let(:longitude_from_uruguay) { -56.164532 }
+  let(:class_store_time) { described_class::STORE_TIME }
   let(:latitude) { latitude_from_uruguay }
   let(:longitude) { longitude_from_uruguay }
   let(:response) { [{ 'lat' => latitude, 'lon' => longitude }] }
@@ -36,7 +37,7 @@ RSpec.describe Weather::CheckWeatherForCityService do
       context 'when the query was previously cached' do
         let!(:stored_response) do
           create(:stored_response, :weather_query_for_city,
-                 api_response: response.first, valid_until: valid_until, params_hash: cache_name)
+                 api_response: response, valid_until: valid_until, params_hash: cache_name)
         end
         let(:cache_name) { { 'city' => city, 'country' => country_code } }
         let(:valid_until) { 30.minutes.ago }
@@ -59,7 +60,7 @@ RSpec.describe Weather::CheckWeatherForCityService do
         end
 
         context 'when the response is no longer valid' do
-          let(:valid_until) { 3.hours.ago }
+          let(:valid_until) { class_store_time.ago - 1.hour }
 
           before do
             allow_any_instance_of(Weather::ApiClientService).to receive(:query_position_for_city)
@@ -72,7 +73,7 @@ RSpec.describe Weather::CheckWeatherForCityService do
 
           it 'updates the stored_response valid_until time' do
             expect { subject }.to change { stored_response.reload.valid_until }
-              .from(valid_until).to(1.hour.from_now)
+              .from(valid_until).to(class_store_time.from_now)
           end
 
           it 'keeps the stored_response attributes' do
@@ -121,7 +122,7 @@ RSpec.describe Weather::CheckWeatherForCityService do
           expect(stored_response.params_hash).to eq(cache_name)
           expect(stored_response.api_client).to eq('Weather::ApiClientService')
           expect(stored_response.method_name).to eq('query_position_for_city')
-          expect(stored_response.valid_until).to eq(1.hour.from_now)
+          expect(stored_response.valid_until).to eq(class_store_time.from_now)
         end
       end
     end
