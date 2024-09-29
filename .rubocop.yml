@@ -32,7 +32,7 @@ RSpec/LetSetup:
   Enabled: false
 
 RSpec/NestedGroups:
-  Max: 4
+  Max: 5
 
 RSpec/ExampleLength:
   Max: 8

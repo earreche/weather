@@ -23,8 +23,8 @@ RSpec.describe Weather::CheckWeatherService do
 
     context 'when the query was previously cached' do
       let!(:stored_response) do
-        create(:stored_response, api_response: response, valid_until: valid_until,
-                                 params_hash: cache_name)
+        create(:stored_response, :weather_query_by_position,
+               api_response: response, valid_until: valid_until, params_hash: cache_name)
       end
       let(:cache_name) { { 'latitude' => latitude, 'longitude' => longitude } }
       let(:valid_until) { 30.minutes.ago }
@@ -55,6 +55,14 @@ RSpec.describe Weather::CheckWeatherService do
           ).and_return(response)
         end
 
+        it 'returns the parsed response' do
+          expect_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
+            latitude: latitude, longitude: longitude
+          ).and_return(response)
+
+          expect(subject).to eq(response)
+        end
+
         it 'does not create a new stored_response' do
           expect { subject }.not_to(change(StoredResponse, :count))
         end
@@ -83,6 +91,14 @@ RSpec.describe Weather::CheckWeatherService do
       end
 
       let(:cache_name) { { 'latitude' => latitude, 'longitude' => longitude } }
+
+      it 'returns the parsed response' do
+        expect_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
+          latitude: latitude, longitude: longitude
+        ).and_return(response)
+
+        expect(subject).to eq(response)
+      end
 
       it 'creates the stores_response in the db' do
         expect { subject }.to change(StoredResponse, :count).by(1)
