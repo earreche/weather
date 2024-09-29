@@ -5,19 +5,23 @@ module Weather
     def query_by_position(latitude:, longitude:)
       raise ArgumentError, 'parametter is missing' if latitude.blank? || longitude.blank?
 
-      @params_hash = { latitude: latitude, longitude: longitude }
+      get_api_or_stored_response(latitude: latitude, longitude: longitude).api_response
+    end
+
+    private
+
+    def get_api_or_stored_response(latitude:, longitude:)
+      params_hash = { latitude: latitude, longitude: longitude }
       @stored_response = StoredResponse.find_or_initialize_by(
-        params_hash: @params_hash, api_client: 'Weather::ApiClientService',
+        params_hash: params_hash, api_client: 'Weather::ApiClientService',
         method_name: 'query_by_position'
       )
       unless @stored_response.valid_response
         update_stored_response(latitude: latitude, longitude: longitude)
       end
 
-      @stored_response.api_response
+      @stored_response
     end
-
-    private
 
     def update_stored_response(latitude:, longitude:)
       @stored_response.api_response = client.query_by_position(latitude: latitude,
