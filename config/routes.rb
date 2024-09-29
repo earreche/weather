@@ -5,7 +5,7 @@ Rails.application.routes.draw do
 
   get '/query_by_position', to: 'public#query_by_position'
   get '/query_by_city', to: 'public#query_by_city'
-  get '/states', to: 'public#states'
+  get '/filter_select_location', to: 'public#filter_select_location'
 
   root 'public#index'
 end

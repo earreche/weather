@@ -7,7 +7,9 @@
     <button data-action="geolocation#getLocation">Refresh</button>
   </turbo-frame>
 
-  <div data-controller='location-form' data-location-form-url-state-value="<%= states_path %>">
+  <div 
+    data-controller='location-form'
+    data-location-form-url-state-value="<%= filter_select_location_path %>">
     <h3>Current Weather for a selected city</h3>
     <div>
       <div style= 'width: 100px'>

@@ -20,7 +20,7 @@ RSpec.describe Weather::CheckWeatherForCityService do
       it { expect { subject }.to raise_error(ArgumentError) }
     end
 
-    context 'when the query was not previously cached' do
+    context 'when sending correct parameters' do
       let(:city) { 'Montevideo' }
       let(:country) { 'Uruguay' }
 

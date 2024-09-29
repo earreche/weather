@@ -5,19 +5,27 @@ class PublicController < ApplicationController
 
   def query_by_position
     render turbo_stream: turbo_stream.replace(
-      'current-weather', partial: 'weather', locals: { weather: check_weather_service }
+      'current-weather', partial: 'weather', locals: {
+        weather: check_weather_service,
+        id: 'current-response'
+      }
     )
   end
 
   def query_by_city
     render turbo_stream: turbo_stream.replace(
-      'city-weather', partial: 'weather', locals: { weather: check_weather_service_for_city }
+      'city-weather', partial: 'weather', locals: {
+        weather: check_weather_service_for_city,
+        id: 'city-response'
+      }
     )
   end
 
-  def states
+  def filter_select_location
     @options = options_for_select
     @target = permitted_params_for_location[:target]
+
+    raise ArgumentError, 'parametter is missing' unless @options && @target
   end
 
   private
@@ -35,8 +43,6 @@ class PublicController < ApplicationController
       CS.states(permitted_params_for_location[:country]).invert
     elsif permitted_params_for_location[:state].present?
       CS.cities(permitted_params_for_location[:state])
-    else
-      []
     end
   end
 
