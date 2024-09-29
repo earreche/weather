@@ -86,6 +86,6 @@ group :test do
   gem 'webdrivers', '~> 5.3.1'
 end
 
-gem "cssbundling-rails", "~> 1.4"
+gem 'cssbundling-rails', '~> 1.4'
 
-gem "jsbundling-rails", "~> 1.3"
+gem 'jsbundling-rails', '~> 1.3'
