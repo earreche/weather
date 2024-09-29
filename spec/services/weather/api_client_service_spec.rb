@@ -47,4 +47,40 @@ RSpec.describe Weather::ApiClientService do
       it { expect { subject }.to raise_error(Weather::Error, error_message) }
     end
   end
+
+  describe '#query_position_for_city' do
+    subject { described_class.new.query_position_for_city(city: city, country: country) }
+
+    context 'when a parameter is missing' do
+      let(:city_is_missing) { [true, false].sample }
+      let(:city) { city_is_missing ? [nil, ''].sample : 'Montevideo' }
+      let(:country) { city_is_missing ? 'UY' : [nil, ''].sample }
+
+      it { expect { subject }.to raise_error(ArgumentError) }
+    end
+
+    context 'when sending a valid city and country' do
+      let(:city) { 'Montevideo' }
+      let(:country) { 'Uruguay' }
+
+      before { api_mocker.mock_query_position_for_city_with_success(city: city, country: country) }
+
+      it 'returns the parsed response' do
+        expect(subject.first['lat']).to eq(latitude_from_uruguay)
+        expect(subject.first['lon']).to eq(longitude_from_uruguay)
+      end
+    end
+
+    context 'when an invalid place is given' do
+      let(:city) { 'UnknownCity' }
+      let(:country) { 'Uruguay' }
+      let(:error_message) { "Unknown city #{city} and country #{country}" }
+
+      before do
+        api_mocker.mock_query_position_for_city_with_no_result(city: city, country: country)
+      end
+
+      it { expect { subject }.to raise_error(Weather::Error, error_message) }
+    end
+  end
 end

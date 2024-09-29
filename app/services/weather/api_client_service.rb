@@ -15,17 +15,35 @@ module Weather
     # @param lat [Integer] is the Latitude.
     # @param lon [Integer] is the Longitude
     # @return the parsed response of the API.
-
     def query_by_position(latitude:, longitude:)
       raise ArgumentError, 'parametter is missing' if latitude.blank? || longitude.blank?
 
-      response = execute_request('get', "/overview?#{query_params_position(latitude, longitude)}")
+      response = execute_request('get',
+                                 "/data/3.0/onecall/overview?#{query_params_position(latitude,
+                                                                                     longitude)}")
       unless success_response?(response)
         error_detail = fetch_error_message(response.parsed_response)
-        raise Error, error_message(latitude, longitude, error_detail)
+        raise Error, unknown_location_message(latitude, longitude, error_detail)
       end
 
       response.parsed_response
+    end
+
+    # Get position for a city.
+    #
+    # @param city [String]
+    # @param country [String]
+    # @return the parsed response of the API.
+    def query_position_for_city(city:, country:)
+      raise ArgumentError, 'parametter is missing' if city.blank? || country.blank?
+
+      response = execute_request('get', "/geo/1.0/direct?q=#{query_params_city(city, country)}")
+      raise Error, "Unknown error #{response.parsed_response}" unless success_response?(response)
+
+      parsed_response = response.parsed_response
+      raise Error, unknown_city_message(city, country) if parsed_response.empty?
+
+      parsed_response
     end
 
     private
@@ -34,6 +52,10 @@ module Weather
 
     def query_params_position(latitude, longitude)
       "lat=#{latitude}&lon=#{longitude}&appid=#{api_access_token}"
+    end
+
+    def query_params_city(city, country)
+      "#{city},#{country}&limit=1&appid=#{api_access_token}"
     end
 
     def api_access_token
@@ -51,13 +73,16 @@ module Weather
     end
 
     def fetch_error_message(error_response)
-      "#{error_response['message']}. Check parameter/s: " \
-        "#{error_response['parameters']&.join(',')}"
+      "#{error_response['message']}. Check parameter/s: #{error_response['parameters']&.join(',')}"
     end
 
-    def error_message(latitude, longitude, error_detail)
+    def unknown_location_message(latitude, longitude, error_detail)
       "Could not retrieve weather for [latitude: #{latitude}, longitude #{longitude}}]. " \
         "Details: #{error_detail}"
+    end
+
+    def unknown_city_message(city, country)
+      "Unknown city #{city} and country #{country}"
     end
   end
 end

@@ -16,6 +16,7 @@ const mockedResponse = {
 
 export default class extends Controller {
   static values = { envirorment: String }
+  static targets = ['city', 'country']
 
   connect() {
     this.getLocation();
@@ -27,6 +28,14 @@ export default class extends Controller {
     }else{
       this.success(mockedResponse)
     }
+  }
+
+  getCityWeather() {
+    let params = new URLSearchParams();
+    params.append('city', this.cityTarget.value)
+    params.append('country', this.countryTarget.value)
+
+    fetchWithTurbo(`/query_by_city?${params}`);
   }
   
   success(pos) {

@@ -1,9 +1,50 @@
 <div data-controller="geolocation" 
     data-geolocation-envirorment-value=<%= ENV.fetch('APP_ENV', 'production') %> >
   <h1>Welcome</h1>
-  <div data-location-target="output"></div>
+  <h3>Current Weather for your Location</h3>
   <turbo-frame id='current-weather'>
-    Current weather will appear here, if you have just allowed location permissions
+    Weather will appear here, if you have just allowed location permissions
     <button data-action="geolocation#getLocation">Refresh</button>
   </turbo-frame>
+
+  <div 
+    data-controller='location-form'
+    data-location-form-url-state-value="<%= filter_select_location_path %>">
+    <h3>Current Weather for a selected city</h3>
+    <div>
+      <div style= 'width: 100px'>
+        <%= label_tag :country, 'Country' %>
+      </div>
+      <%= select_tag(:country, options_for_select(CS.countries.invert), style: 'width: 400px',
+        data: { action: 'location-form#countrySelect', geolocation_target: 'country',
+        location_form_target: 'country'}, prompt: 'Please Select') %>
+    </div>
+
+    <div>
+      <div style= 'width: 100px'>
+        <%= label_tag :state, 'State' %>
+      </div>
+      <%= select_tag(:state, options_for_select([]), style: 'width: 400px',
+        data: { action: 'location-form#stateSelect', location_form_target: 'state'},
+        disabled: true) %>
+    </div>
+
+    <div>
+      <div style= 'width: 100px'>
+        <%= label_tag :city, 'City' %>
+      </div>
+      <%= select_tag(:city, options_for_select([]), style: 'width: 400px',
+        data: { geolocation_target: 'city', location_form_target: 'city' },
+        disabled: true) %>
+    </div>
+
+    <div>
+      <button data-action="geolocation#getCityWeather" data-location-form-target="button" disabled=true>
+        Get weather from this city
+      </button>
+    </div>
+
+    <turbo-frame id='city-weather'>
+    </turbo-frame>
+  </div>
 </div>
