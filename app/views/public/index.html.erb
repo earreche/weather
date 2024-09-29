@@ -1,0 +1,9 @@
+<div data-controller="geolocation" 
+    data-geolocation-envirorment-value=<%= ENV.fetch('APP_ENV', 'production') %> >
+  <h1>Welcome</h1>
+  <div data-location-target="output"></div>
+  <turbo-frame id='current-weather'>
+    Current weather will appear here, if you have just allowed location permissions
+    <button data-action="geolocation#getLocation">Refresh</button>
+  </turbo-frame>
+</div>

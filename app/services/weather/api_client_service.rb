@@ -12,17 +12,17 @@ module Weather
 
     # Check weather for a location.
     #
-    # @param lat [Integer] is the Latittude.
+    # @param lat [Integer] is the Latitude.
     # @param lon [Integer] is the Longitude
     # @return the parsed response of the API.
 
-    def query_by_position(latittude:, longitude:)
-      raise ArgumentError, 'parametter is missing' if latittude.blank? || longitude.blank?
+    def query_by_position(latitude:, longitude:)
+      raise ArgumentError, 'parametter is missing' if latitude.blank? || longitude.blank?
 
-      response = execute_request('get', "/overview?#{query_params_position(latittude, longitude)}")
+      response = execute_request('get', "/overview?#{query_params_position(latitude, longitude)}")
       unless success_response?(response)
         error_detail = fetch_error_message(response.parsed_response)
-        raise Error, error_message(latittude, longitude, error_detail)
+        raise Error, error_message(latitude, longitude, error_detail)
       end
 
       response.parsed_response
@@ -32,8 +32,8 @@ module Weather
 
     attr_reader :api_key
 
-    def query_params_position(latittude, longitude)
-      "lat=#{latittude}&lon=#{longitude}&appid=#{api_access_token}"
+    def query_params_position(latitude, longitude)
+      "lat=#{latitude}&lon=#{longitude}&appid=#{api_access_token}"
     end
 
     def api_access_token
@@ -55,8 +55,8 @@ module Weather
         "#{error_response['parameters']&.join(',')}"
     end
 
-    def error_message(latittude, longitude, error_detail)
-      "Could not retrieve weather for [latittude: #{latittude}, longitude #{longitude}}]. " \
+    def error_message(latitude, longitude, error_detail)
+      "Could not retrieve weather for [latitude: #{latitude}, longitude #{longitude}}]. " \
         "Details: #{error_detail}"
     end
   end

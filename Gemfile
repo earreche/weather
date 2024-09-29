@@ -78,4 +78,5 @@ group :test do
   gem 'capybara-screenshot', '~> 1.0.26'
   gem 'selenium-webdriver'
   gem 'shoulda-matchers', '~> 5.3.0'
+  gem 'webdrivers', '~> 5.3.1'
 end
