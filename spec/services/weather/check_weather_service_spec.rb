@@ -8,7 +8,7 @@ RSpec.describe Weather::CheckWeatherService do
   let(:latitude) { latitude_from_uruguay }
   let(:longitude) { longitude_from_uruguay }
   let(:cache_name) { "#{latitude}, #{longitude}" }
-  let(:response) { { weather_overview: 'The current weather is super nice' } }
+  let(:response) { { 'weather_overview' => 'The current weather is super nice' } }
 
   describe '#query_by_position' do
     subject { described_class.new.query_by_position(latitude: latitude, longitude: longitude) }
@@ -22,33 +22,76 @@ RSpec.describe Weather::CheckWeatherService do
     end
 
     context 'when the query was previously cached' do
-      before do
-        Rails.cache.clear
-        Rails.cache.write(cache_name, response, { expires_in: 1.hour })
+      let!(:stored_response) do
+        create(:stored_response, api_response: response, valid_until: valid_until,
+                                 params_hash: cache_name)
+      end
+      let(:cache_name) { { 'latitude' => latitude, 'longitude' => longitude } }
+      let(:valid_until) { 30.minutes.ago }
+
+      context 'when the response is still valid' do
+        it 'returns the parsed response' do
+          expect_any_instance_of(Weather::ApiClientService).not_to receive(:query_by_position)
+
+          expect(subject).to eq(response)
+        end
+
+        it 'does not create a new stored_response' do
+          expect { subject }.not_to(change(StoredResponse, :count))
+        end
+
+        it 'does not update the stored_response valid_until time' do
+          expect { subject }.not_to(change { stored_response.reload.valid_until })
+        end
       end
 
-      it 'returns the parsed response' do
-        expect_any_instance_of(Weather::ApiClientService).not_to receive(:query_by_position)
+      context 'when the response is no longer valid' do
+        let(:valid_until) { 3.hours.ago }
 
-        expect(subject).to eq(response)
+        before do
+          Timecop.freeze(Time.zone.now)
+          allow_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
+            latitude: latitude, longitude: longitude
+          ).and_return(response)
+        end
+
+        it 'does not create a new stored_response' do
+          expect { subject }.not_to(change(StoredResponse, :count))
+        end
+
+        it 'updates the stored_response valid_until time' do
+          expect { subject }.to change { stored_response.reload.valid_until }
+            .from(valid_until).to(1.hour.from_now)
+        end
+
+        it 'keeps the stored_response attributes' do
+          subject
+
+          expect(stored_response.reload.params_hash).to eq(cache_name)
+          expect(stored_response.api_client).to eq('Weather::ApiClientService')
+          expect(stored_response.method_name).to eq('query_by_position')
+        end
       end
     end
 
-    context 'when the query was not previously cached' do
+    context 'when the query was not previously stored' do
       before do
-        Rails.cache.clear
+        Timecop.freeze(Time.zone.now)
         allow_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
           latitude: latitude, longitude: longitude
         ).and_return(response)
-        allow(Rails.cache).to receive(:write)
       end
 
-      it 'stores the expected value in the cache' do
-        subject
+      let(:cache_name) { { 'latitude' => latitude, 'longitude' => longitude } }
 
-        expect(Rails.cache).to have_received(:write).with(
-          cache_name, response, { expires_in: 1.hour }
-        )
+      it 'creates the stores_response in the db' do
+        expect { subject }.to change(StoredResponse, :count).by(1)
+
+        stored_response = StoredResponse.last
+        expect(stored_response.params_hash).to eq(cache_name)
+        expect(stored_response.api_client).to eq('Weather::ApiClientService')
+        expect(stored_response.method_name).to eq('query_by_position')
+        expect(stored_response.valid_until).to eq(1.hour.from_now)
       end
     end
   end

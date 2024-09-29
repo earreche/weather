@@ -43,6 +43,7 @@ end
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{Rails.root}/spec/fixtures"
+  config.include FactoryBot::Syntax::Methods
 
   # If you're not using ActiveRecord, or you'd prefer not to run each of your
   # examples within a transaction, remove the following line or assign false
@@ -113,4 +114,11 @@ Capybara.configure do |config|
   config.javascript_driver = :chrome
   config.server = :puma, { Silent: true }
   config.server_host = '0.0.0.0'
+end
+
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
 end
