@@ -85,3 +85,7 @@ group :test do
   gem 'timecop'
   gem 'webdrivers', '~> 5.3.1'
 end
+
+gem "cssbundling-rails", "~> 1.4"
+
+gem "jsbundling-rails", "~> 1.3"
