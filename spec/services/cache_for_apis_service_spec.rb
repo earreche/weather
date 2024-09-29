@@ -2,30 +2,27 @@
 
 require 'rails_helper'
 
-RSpec.describe Weather::CheckWeatherService do
-  let(:latitude_from_uruguay) { -34.901112 }
-  let(:longitude_from_uruguay) { -56.164532 }
-  let(:latitude) { latitude_from_uruguay }
-  let(:longitude) { longitude_from_uruguay }
-  let(:params_hash) { { 'latitude' => latitude, 'longitude' => longitude } }
-  let(:response) { { 'weather_overview' => 'The current weather is super nice' } }
-  let(:class_store_time) { described_class::STORE_TIME }
+RSpec.describe CacheForApisService do
+  let(:api_class) { Weather::ApiClientService }
+  let(:method_name) { 'query_by_position' }
+  let(:latitude) { -34.901112 }
+  let(:longitude) { -56.164532 }
+  let(:params_hash) { { latitude: latitude, longitude: longitude } }
+  let(:api_response) { { 'weather_overview' => 'The current weather is super nice' } }
+  let(:class_store_time) { 1.hour }
 
-  describe '#query_by_position' do
-    subject { described_class.new.query_by_position(latitude: latitude, longitude: longitude) }
-
-    context 'when a parameter is missing' do
-      let(:latitude_is_missing) { [true, false].sample }
-      let(:latitude) { latitude_is_missing ? [nil, ''].sample : latitude_from_uruguay }
-      let(:longitude) { latitude_is_missing ? longitude_from_uruguay : [nil, ''].sample }
-
-      it { expect { subject }.to raise_error(ArgumentError) }
+  describe '#call' do
+    subject do
+      described_class.call(
+        api_class: Weather::ApiClientService, method_name: method_name, params_hash: params_hash,
+        store_time: class_store_time
+      )
     end
 
     context 'when the query was previously cached' do
       let!(:stored_response) do
         create(:stored_response, :weather_query_by_position,
-               api_response: response, valid_until: valid_until, params_hash: params_hash)
+               api_response: api_response, valid_until: valid_until, params_hash: params_hash)
       end
       let(:valid_until) { 30.minutes.ago }
 
@@ -33,7 +30,7 @@ RSpec.describe Weather::CheckWeatherService do
         it 'returns the parsed response' do
           expect_any_instance_of(Weather::ApiClientService).not_to receive(:query_by_position)
 
-          expect(subject).to eq(response)
+          expect(subject).to eq(api_response)
         end
 
         it 'does not create a new stored_response' do
@@ -51,16 +48,16 @@ RSpec.describe Weather::CheckWeatherService do
         before do
           Timecop.freeze(Time.zone.now)
           allow_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
-            latitude: latitude, longitude: longitude
-          ).and_return(response)
+            params_hash
+          ).and_return(api_response)
         end
 
         it 'returns the parsed response' do
           expect_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
-            latitude: latitude, longitude: longitude
-          ).and_return(response)
+            params_hash
+          ).and_return(api_response)
 
-          expect(subject).to eq(response)
+          expect(subject).to eq(api_response)
         end
 
         it 'does not create a new stored_response' do
@@ -75,7 +72,7 @@ RSpec.describe Weather::CheckWeatherService do
         it 'keeps the stored_response attributes' do
           subject
 
-          expect(stored_response.reload.params_hash).to eq(params_hash)
+          expect(stored_response.reload.params_hash).to eq(params_hash.transform_keys(&:to_s))
           expect(stored_response.api_client).to eq('Weather::ApiClientService')
           expect(stored_response.method_name).to eq('query_by_position')
         end
@@ -86,25 +83,15 @@ RSpec.describe Weather::CheckWeatherService do
       before do
         Timecop.freeze(Time.zone.now)
         allow_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
-          latitude: latitude, longitude: longitude
-        ).and_return(response)
-      end
-
-      let(:params_hash) { { 'latitude' => latitude, 'longitude' => longitude } }
-
-      it 'returns the parsed response' do
-        expect_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
-          latitude: latitude, longitude: longitude
-        ).and_return(response)
-
-        expect(subject).to eq(response)
+          params_hash
+        ).and_return(api_response)
       end
 
       it 'creates the stores_response in the db' do
         expect { subject }.to change(StoredResponse, :count).by(1)
 
         stored_response = StoredResponse.last
-        expect(stored_response.params_hash).to eq(params_hash)
+        expect(stored_response.params_hash).to eq(params_hash.transform_keys(&:to_s))
         expect(stored_response.api_client).to eq('Weather::ApiClientService')
         expect(stored_response.method_name).to eq('query_by_position')
         expect(stored_response.valid_until).to eq(class_store_time.from_now)

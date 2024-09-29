@@ -7,7 +7,7 @@ class StoredResponse < ApplicationRecord
             :api_response,
             :valid_until, presence: true
 
-  def valid_response
-    persisted? && valid_until > 1.hour.ago
+  def valid_response?(valid_until_date)
+    persisted? && valid_until > valid_until_date
   end
 end

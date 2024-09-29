@@ -6,7 +6,7 @@ class HomePage < ApplicationPage
     visit root_path(protocol: :https)
   end
 
-  def fill_location(country, city, state)
+  def fill_location(country, state, city)
     select_country(country)
     select_state(state)
     select_city(city)
@@ -17,12 +17,12 @@ class HomePage < ApplicationPage
   end
 
   def select_state(state)
-    page.has_css?('#state', wait: 5)
+    page.has_text?(state, wait: 5)
     select state, from: 'state'
   end
 
   def select_city(city)
-    page.has_css?('#city', wait: 5)
+    page.has_css?(city, wait: 5)
     select city, from: 'city'
   end
 
