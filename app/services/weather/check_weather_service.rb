@@ -5,16 +5,26 @@ module Weather
     def query_by_position(latitude:, longitude:)
       raise ArgumentError, 'parametter is missing' if latitude.blank? || longitude.blank?
 
-      cache_name = "#{latitude}, #{longitude}"
-      redis_value = Rails.cache.fetch(cache_name)
-      return redis_value if redis_value.present?
+      @params_hash = { latitude: latitude, longitude: longitude }
+      @stored_response = StoredResponse.find_or_initialize_by(
+        params_hash: @params_hash, api_client: 'Weather::ApiClientService',
+        method_name: 'query_by_position'
+      )
+      unless @stored_response.valid_response
+        update_stored_response(latitude: latitude, longitude: longitude)
+      end
 
-      redis_value = client.query_by_position(latitude: latitude, longitude: longitude)
-      Rails.cache.write(cache_name, redis_value, expires_in: 1.hour)
-      redis_value
+      @stored_response.api_response
     end
 
     private
+
+    def update_stored_response(latitude:, longitude:)
+      @stored_response.api_response = client.query_by_position(latitude: latitude,
+                                                               longitude: longitude)
+      @stored_response.valid_until = 1.hour.from_now
+      @stored_response.save
+    end
 
     def client
       @client ||= Weather::ApiClientService.new
