@@ -27,7 +27,7 @@ class CacheForApisService
   attr_reader :api_class, :method_name, :params_hash, :store_time
 
   def update_stored_response
-    @stored_response.api_response = api_class.new.send(method_name, params_hash)
+    @stored_response.api_response = api_class.new.send(method_name, **params_hash)
     @stored_response.valid_until = store_time.from_now
     @stored_response.save
   end
