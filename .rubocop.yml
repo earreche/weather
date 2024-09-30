@@ -76,6 +76,9 @@ Style/Documentation:
 Style/DocumentDynamicEvalDefinition:
   Enabled: true
 
+Style/HashSyntax:
+  Enabled: false
+
 Rails/FilePath:
   Enabled: false
 
