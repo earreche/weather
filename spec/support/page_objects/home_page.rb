@@ -47,6 +47,6 @@ class HomePage < ApplicationPage
   end
 
   def has_current_temperature?(temperature)
-    page.has_text?("Temperature: #{temperature}K", wait: 10)
+    page.has_text?("Temperature: #{temperature}", wait: 10)
   end
 end

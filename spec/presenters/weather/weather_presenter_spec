@@ -25,14 +25,14 @@ RSpec.describe Weather::WeatherPresenter do
 
   describe '#current_temperature' do
     subject { described_class.new(payload_wrapper).current_temperature }
-    let(:expected_response) { 295.97 }
+    let(:expected_response) { '295.97 F' }
 
     it { is_expected.to eq(expected_response) }
   end
 
   describe '#current_feels_like' do
     subject { described_class.new(payload_wrapper).current_feels_like }
-    let(:expected_response) { 295.98 }
+    let(:expected_response) { '295.98 F' }
 
     it { is_expected.to eq(expected_response) }
   end
@@ -59,7 +59,7 @@ RSpec.describe Weather::WeatherPresenter do
           {
             description: "Broken clouds",
             icon: "weather_icons/04d.png",
-            temp: "295.97 K",
+            temp: "295.97 F",
             time: "In 20 Hours"
           }
         ]
@@ -76,8 +76,8 @@ RSpec.describe Weather::WeatherPresenter do
           {
             description: "Overcast clouds",
             icon: "weather_icons/04d.png",
-            :max=>"295.97 K",
-            :min=>"287.68 K",
+            :max=>"295.97 F",
+            :min=>"287.68 F",
             :time=>"In 1 Day"
           }
         ]

@@ -11,11 +11,11 @@ module Weather
     end
 
     def current_temperature
-      current['temp']
+      "#{current['temp']} #{degree_unit}"
     end
 
     def current_feels_like
-      current['feels_like']
+      "#{current['feels_like']} #{degree_unit}"
     end
 
     def current_description
@@ -45,12 +45,18 @@ module Weather
     attr_reader :payload
 
     def present_temperatures(weather)
-      return { temp: "#{weather['temp']} K" } unless weather['temp'].try(:include?, 'min')
+      unless weather['temp'].try(:include?, 'min')
+        return { temp: "#{weather['temp']} #{degree_unit}" } 
+      end
 
       {
-        min: "#{weather.dig('temp', 'min')} K",
-        max: "#{weather.dig('temp', 'max')} K"
+        min: "#{weather.dig('temp', 'min')} #{degree_unit}",
+        max: "#{weather.dig('temp', 'max')} #{degree_unit}"
       }
+    end
+
+    def degree_unit
+      'F'
     end
 
     def calculate_gap_time(time, gap)

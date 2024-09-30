@@ -80,7 +80,7 @@ class WeatherMocker
 
     WebMock
       .stub_request(:get, "#{BASE_API_URL}data/3.0/onecall?" \
-                          "lat=#{latitude}&lon=#{longitude}&#{app_id}")
+                          "lat=#{latitude}&lon=#{longitude}&units=imperial&#{app_id}")
       .with(body: '', headers: default_api_request_headers)
       .to_return(status: 200, body: response_body, headers: default_response_headers)
   end
@@ -98,7 +98,7 @@ class WeatherMocker
 
     WebMock
       .stub_request(:get, "#{BASE_API_URL}data/3.0/onecall?" \
-                          "lat=#{latitude}&lon=#{longitude}&#{app_id}")
+                          "lat=#{latitude}&lon=#{longitude}&units=imperial&#{app_id}")
       .with(body: '', headers: default_api_request_headers)
       .to_return(status: 400, body: response_body, headers: default_response_headers)
   end
