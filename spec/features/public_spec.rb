@@ -43,7 +43,6 @@ RSpec.feature 'Home Page' do
     let(:state) { 'Montevideo Department' }
     let(:country) { 'Uruguay' }
     let(:country_code) { 'UY' }
-    let(:current_temperature) { '123' }
 
     before do
       api_mocker.mock_query_position_for_city_with_success(city: city, country: country_code)
