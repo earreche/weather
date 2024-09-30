@@ -7,7 +7,6 @@ class PublicController < ApplicationController
     render turbo_stream: turbo_stream.replace(
       'current-weather', partial: 'weather', locals: {
         weather: Weather::WeatherPresenter.new(check_weather_service),
-        id: 'current-response',
         location: 'your location'
       }
     )
@@ -17,7 +16,6 @@ class PublicController < ApplicationController
     render turbo_stream: turbo_stream.replace(
       'current-weather', partial: 'weather', locals: {
         weather: Weather::WeatherPresenter.new(check_weather_service_for_city),
-        id: 'current-response',
         location: "#{params[:city]}, #{params[:country]}"
       }
     )

@@ -28,7 +28,7 @@ module Weather
 
     def group_presenter(initial_filter:, amount: 5, drop: 1, divide_by: '1.hour')
       duration, time_text = divide_by.split('.')
-      gap = get_gap_number(time_text, duration)
+      gap = duration.to_i.send(time_text)
       initial_filter.drop(drop).first(amount).map do |next_weather|
         gap_time = calculate_gap_time(next_weather['dt'], gap)
         {
@@ -51,10 +51,6 @@ module Weather
         min: "#{weather.dig('temp', 'min')} K",
         max: "#{weather.dig('temp', 'max')} K"
       }
-    end
-
-    def get_gap_number(duration, time_text)
-      duration.to_i.send(time_text)
     end
 
     def calculate_gap_time(time, gap)
