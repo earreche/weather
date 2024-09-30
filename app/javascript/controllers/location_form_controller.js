@@ -2,19 +2,10 @@ import { Controller } from "@hotwired/stimulus"
 import { fetchWithTurbo } from '../modules/utils/fetchWithTurbo';
 
 export default class extends Controller {
-  static targets = ['form', 'country', 'state', 'city', 'button']
+  static targets = ['country', 'state', 'city', 'button']
   static values = {
     urlState: String,
     urlCity: String
-  }
-  
-  showForm() {
-    let element = this.formTarget;
-    if (element.style.display === 'none'){
-      element.style.display = 'flex';
-    } else {
-      element.style.display = 'none';
-    }
   }
 
   countrySelect() {
