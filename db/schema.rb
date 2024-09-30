@@ -10,12 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_09_29_032656) do
+ActiveRecord::Schema[7.0].define(version: 2024_09_30_161109) do
+  # These are extensions that must be enabled in order to support this database
+  enable_extension "plpgsql"
+
   create_table "stored_responses", force: :cascade do |t|
     t.string "api_client", null: false
     t.string "method_name", null: false
-    t.json "params_hash", null: false
-    t.json "api_response", null: false
+    t.jsonb "params_hash", null: false
+    t.jsonb "api_response", null: false
     t.datetime "valid_until", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
