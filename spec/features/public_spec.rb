@@ -7,13 +7,13 @@ RSpec.feature 'Home Page' do
   let(:api_mocker) { WeatherMocker.new }
   let(:latitude) { '-34.901112' }
   let(:longitude) { '-56.164532' }
+  let(:current_temperature) { '295.97' }
   let(:response_api) { 'The current weather is super nice' }
 
   feature 'getting the weather for current location' do
     subject { home_page.visit_home_page }
 
     context 'when the location is not permitted' do
-      pending 'Js seems to still be working and is not giving consisting results'
       scenario 'shows text to refreshing the weather after permission is given' do
         subject
 
@@ -31,6 +31,7 @@ RSpec.feature 'Home Page' do
 
         expect(home_page).to have_weather_at_your_location
         expect(home_page).not_to have_refresh_text
+        expect(home_page).to have_current_temperature(current_temperature)
       end
     end
   end
@@ -49,13 +50,17 @@ RSpec.feature 'Home Page' do
     end
 
     scenario 'shows the selected city\'s weather' do
-      pending 'button is not getting clicked so js is not calling turbo'
       subject
+
+      expect(home_page).to have_weather_at_your_location
+      expect(home_page).not_to have_weather_at_city(city, country_code)
 
       home_page.fill_location(country, state, city)
       home_page.click_get_weather_for_city
 
-      expect(home_page).to have_weather_at_city(city, country)
+      expect(home_page).to have_weather_at_city(city, country_code)
+      expect(home_page).not_to have_weather_at_your_location
+      expect(home_page).to have_current_temperature(current_temperature)
     end
   end
 end

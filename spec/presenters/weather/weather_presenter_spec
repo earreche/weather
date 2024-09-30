@@ -3,12 +3,15 @@
 require 'rails_helper'
 
 RSpec.describe Weather::WeatherPresenter do
-  include_context :new_weather_wrapper_context
+  include_context 'new weather wrapper context'
 
   let(:payload_wrapper) { Weather::PayloadWrapper.new(payload) }
 
   describe '#current_weather_details' do
     subject { described_class.new(payload_wrapper).current_weather_details }
+
+    before { Timecop.freeze(('2024-09-29'.to_date)) }
+
     let(:expected_response) do
       {
         "dew_point" => 288.81,
@@ -57,7 +60,7 @@ RSpec.describe Weather::WeatherPresenter do
             description: "Broken clouds",
             icon: "weather_icons/04d.png",
             temp: "295.97 K",
-            time: "In -10 Hours"
+            time: "In 20 Hours"
           }
         ]
       end
@@ -71,10 +74,11 @@ RSpec.describe Weather::WeatherPresenter do
       let(:expected_response) do
         [
           {
-            description: "Broken clouds",
+            description: "Overcast clouds",
             icon: "weather_icons/04d.png",
-            temp: "295.97 K",
-            time: "In -10 Hours"
+            :max=>"295.97 K",
+            :min=>"287.68 K",
+            :time=>"In 1 Day"
           }
         ]
       end
