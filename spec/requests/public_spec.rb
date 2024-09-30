@@ -6,6 +6,7 @@ RSpec.describe 'Public' do
   let(:params) { '' }
   let(:latitude) { '-34.901112' }
   let(:longitude) { '-56.164532' }
+  let(:api_mocker) { WeatherMocker.new }
 
   describe 'GET /' do
     subject do
@@ -27,7 +28,6 @@ RSpec.describe 'Public' do
     end
 
     context 'when parameters are sent' do
-      let(:api_response) { { weather_overview: 'The current weather is super nice' } }
       let(:params) do
         {
           lat: latitude,
@@ -35,10 +35,14 @@ RSpec.describe 'Public' do
         }
       end
 
+      before do
+        api_mocker.mock_query_by_position_with_success(latitude: latitude, longitude: longitude)
+      end
+
       it 'calls the weather API with correct parameters and returns ok' do
         expect_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
           latitude: latitude, longitude: longitude
-        ).and_return(api_response)
+        ).and_call_original
 
         expect(subject).to have_http_status(:ok)
       end
@@ -57,19 +61,23 @@ RSpec.describe 'Public' do
 
     context 'when parameters are sent' do
       let(:city) { 'Montevideo' }
-      let(:country) { 'Uruguay' }
-      let(:api_response) { { weather_overview: 'The current weather is super nice' } }
+      let(:country_code) { 'UY' }
       let(:params) do
         {
           city: city,
-          country: country
+          country: country_code
         }
+      end
+
+      before do
+        api_mocker.mock_query_by_position_with_success(latitude: latitude, longitude: longitude)
+        api_mocker.mock_query_position_for_city_with_success(city: city, country: country_code)
       end
 
       it 'calls the weather API with correct parameters and returns ok' do
         expect_any_instance_of(Weather::CheckWeatherForCityService).to receive(:query_weather).with(
-          city: city, country: country
-        ).and_return(api_response)
+          city: city, country: country_code
+        ).and_call_original
 
         expect(subject).to have_http_status(:ok)
       end

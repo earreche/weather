@@ -1,50 +1,60 @@
-<div data-controller="geolocation" 
-    data-geolocation-envirorment-value=<%= ENV.fetch('APP_ENV', 'production') %> >
-  <h1>Welcome</h1>
-  <h3>Current Weather for your Location</h3>
-  <turbo-frame id='current-weather'>
-    Weather will appear here, if you have just allowed location permissions
-    <button data-action="geolocation#getLocation">Refresh</button>
-  </turbo-frame>
-
-  <div 
-    data-controller='location-form'
+<div data-controller="geolocation location-form" 
+    data-geolocation-envirorment-value=<%= ENV.fetch('APP_ENV', 'production') %>
     data-location-form-url-state-value="<%= filter_select_location_path %>">
-    <h3>Current Weather for a selected city</h3>
-    <div>
-      <div style= 'width: 100px'>
-        <%= label_tag :country, 'Country' %>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Weather Site</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <button data-action="location-form#showForm" class="nav-link">
+              Change City
+            </button>
+          </li>
+          <li class="nav-item">
+            <button data-action="geolocation#getLocation" class="nav-link">
+              Show weather from your location
+            </button>
+          </li>
+        </ul>
       </div>
-      <%= select_tag(:country, options_for_select(CS.countries.invert), style: 'width: 400px',
-        data: { action: 'location-form#countrySelect', geolocation_target: 'country',
-        location_form_target: 'country'}, prompt: 'Please Select') %>
     </div>
-
-    <div>
-      <div style= 'width: 100px'>
-        <%= label_tag :state, 'State' %>
+  </nav>
+  <div style= "display: none" data-location-form-target="form" class='row'>
+    <div class="col-md-6">
+      <div class="mb-2">
+        <%= label_tag :country, 'Country', class: 'form-label' %>
+        <%= select_tag(:country, options_for_select(CS.countries.invert), class: 'form-control',
+          data: { action: 'location-form#countrySelect', geolocation_target: 'country',
+          location_form_target: 'country'}, prompt: 'Please Select') %>
       </div>
-      <%= select_tag(:state, options_for_select([]), style: 'width: 400px',
-        data: { action: 'location-form#stateSelect', location_form_target: 'state'},
-        disabled: true) %>
-    </div>
-
-    <div>
-      <div style= 'width: 100px'>
-        <%= label_tag :city, 'City' %>
+      <div class="mb-2">
+        <%= label_tag :state, 'State', class: 'form-label' %>
+        <%= select_tag(:state, options_for_select([]), class: 'form-control',
+          data: { action: 'location-form#stateSelect', location_form_target: 'state'},
+          disabled: true) %>
       </div>
-      <%= select_tag(:city, options_for_select([]), style: 'width: 400px',
-        data: { geolocation_target: 'city', location_form_target: 'city' },
-        disabled: true) %>
-    </div>
 
-    <div>
-      <button data-action="geolocation#getCityWeather" data-location-form-target="button" disabled=true>
+      <div class="mb-2">
+        <%= label_tag :city, 'City', class: 'form-label' %>
+        <%= select_tag(:city, options_for_select([]), class: 'form-control',
+          data: { geolocation_target: 'city', location_form_target: 'city' },
+          disabled: true)%>
+      </div>
+
+      <button data-action="geolocation#getCityWeather" class="btn btn-info my-3"
+        data-location-form-target="button" disabled=true>
         Get weather from this city
       </button>
     </div>
-
-    <turbo-frame id='city-weather'>
-    </turbo-frame>
   </div>
 </div>
+<turbo-frame id='current-weather'>
+  Weather should be here, if you are reading this you need to accept location permissions,
+  click to Show weather from your location or pick a city
+</turbo-frame>

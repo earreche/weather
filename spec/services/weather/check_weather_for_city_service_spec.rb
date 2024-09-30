@@ -9,7 +9,8 @@ RSpec.describe Weather::CheckWeatherForCityService do
   let(:latitude) { latitude_from_uruguay }
   let(:longitude) { longitude_from_uruguay }
   let(:response) { [{ 'lat' => latitude, 'lon' => longitude }] }
-  let(:response_weather) { { 'weather_overview' => 'The current weather is super nice' } }
+  let(:response_weather) { { 'current' => 'The current weather is super nice' } }
+  let(:wrapped_response) { Weather::PayloadWrapper.new(response_weather) }
 
   describe '#query_weather' do
     subject { described_class.new.query_weather(city: city, country: country_code) }
@@ -31,7 +32,7 @@ RSpec.describe Weather::CheckWeatherForCityService do
         Timecop.freeze(Time.zone.now)
         allow_any_instance_of(
           Weather::CheckWeatherService
-        ).to receive(:query_by_position).and_return(response_weather)
+        ).to receive(:query_by_position).and_return(wrapped_response)
       end
 
       context 'when the query was previously cached' do
@@ -47,7 +48,7 @@ RSpec.describe Weather::CheckWeatherForCityService do
             expect_any_instance_of(Weather::ApiClientService)
               .not_to receive(:query_position_for_city)
 
-            expect(subject).to eq(response_weather)
+            expect(subject).to eq(wrapped_response)
           end
 
           it 'does not create a new stored_response' do
@@ -87,7 +88,7 @@ RSpec.describe Weather::CheckWeatherForCityService do
           it 'returns the parsed response' do
             expect_any_instance_of(Weather::ApiClientService).to receive(:query_position_for_city)
 
-            expect(subject).to eq(response_weather)
+            expect(subject).to eq(wrapped_response)
           end
         end
       end
@@ -104,7 +105,7 @@ RSpec.describe Weather::CheckWeatherForCityService do
         it 'returns the parsed response' do
           expect_any_instance_of(Weather::ApiClientService).to receive(:query_position_for_city)
 
-          expect(subject).to eq(response_weather)
+          expect(subject).to eq(wrapped_response)
         end
 
         it 'calls the weather service with the correct parameters' do

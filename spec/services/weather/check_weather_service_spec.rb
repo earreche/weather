@@ -8,7 +8,7 @@ RSpec.describe Weather::CheckWeatherService do
   let(:latitude) { latitude_from_uruguay }
   let(:longitude) { longitude_from_uruguay }
   let(:params_hash) { { 'latitude' => latitude, 'longitude' => longitude } }
-  let(:response) { { 'weather_overview' => 'The current weather is super nice' } }
+  let(:response) { { 'current' => 'The current weather is super nice' } }
   let(:class_store_time) { described_class::STORE_TIME }
 
   describe '#query_by_position' do
@@ -30,10 +30,11 @@ RSpec.describe Weather::CheckWeatherService do
       let(:valid_until) { 30.minutes.ago }
 
       context 'when the response is still valid' do
-        it 'returns the parsed response' do
+        it 'returns a wrapped response' do
           expect_any_instance_of(Weather::ApiClientService).not_to receive(:query_by_position)
+          expect(Weather::PayloadWrapper).to receive(:new).with(response).and_call_original
 
-          expect(subject).to eq(response)
+          expect(subject.current).to eq(response['current'])
         end
 
         it 'does not create a new stored_response' do
@@ -59,8 +60,9 @@ RSpec.describe Weather::CheckWeatherService do
           expect_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
             latitude: latitude, longitude: longitude
           ).and_return(response)
+          expect(Weather::PayloadWrapper).to receive(:new).with(response).and_call_original
 
-          expect(subject).to eq(response)
+          expect(subject.current).to eq(response['current'])
         end
 
         it 'does not create a new stored_response' do
@@ -96,8 +98,9 @@ RSpec.describe Weather::CheckWeatherService do
         expect_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
           latitude: latitude, longitude: longitude
         ).and_return(response)
+        expect(Weather::PayloadWrapper).to receive(:new).with(response).and_call_original
 
-        expect(subject).to eq(response)
+        expect(subject.current).to eq(response['current'])
       end
 
       it 'creates the stores_response in the db' do

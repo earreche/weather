@@ -15,12 +15,71 @@ class WeatherMocker
         "tz": "-03:00",
         "date": "2024-09-26",
         "units": "standard",
-        "weather_overview": "The current weather is super nice"
+        "current": {
+          "temp": 295.97,
+          "feels_like": 295.98,
+          "pressure": 1010,
+          "humidity": 64,
+          "dew_point": 288.81,
+          "weather": [
+            {
+              "id": 803,
+              "main": "Clouds",
+              "description": "broken clouds",
+              "icon": "04d"
+            }
+          ]
+        },
+        "hourly": [
+          {
+            "dt": 1727640000,
+            "temp": 295.97,
+            "feels_like": 295.98,
+            "weather": [
+                {
+                  "id": 803,
+                  "main": "Clouds",
+                  "description": "broken clouds",
+                  "icon": "04d"
+                }
+            ]
+          },
+          {
+            "dt": 1727643600,
+            "temp": 294.9,
+            "feels_like": 294.91,
+            "weather": [
+              {
+                "id": 803,
+                "main": "Clouds",
+                "description": "broken clouds",
+                "icon": "04d"
+              }
+            ]
+          }
+        ],
+         "daily": [
+          {
+            "dt": 1727622000,
+            "temp": {
+              "min": 287.68,
+              "max": 295.97
+            },
+            "weather": [
+              {
+                "id": 804,
+                "main": "Clouds",
+                "description": "overcast clouds",
+                "icon": "04d"
+              }
+            ]
+          }
+        ]
       }
     JSON
 
     WebMock
-      .stub_request(:get, "#{BASE_API_URL}data/3.0/onecall/overview?" \
+      .stub_request(:get, "#{BASE_API_URL}data/3.0/onecall?" \
                           "lat=#{latitude}&lon=#{longitude}&#{app_id}")
       .with(body: '', headers: default_api_request_headers)
       .to_return(status: 200, body: response_body, headers: default_response_headers)
@@ -38,7 +97,7 @@ class WeatherMocker
     JSON
 
     WebMock
-      .stub_request(:get, "#{BASE_API_URL}data/3.0/onecall/overview?" \
+      .stub_request(:get, "#{BASE_API_URL}data/3.0/onecall?" \
                           "lat=#{latitude}&lon=#{longitude}&#{app_id}")
       .with(body: '', headers: default_api_request_headers)
       .to_return(status: 400, body: response_body, headers: default_response_headers)

@@ -28,6 +28,9 @@ RSpec/AnyInstance:
 RSpec/StubbedMock:
   Enabled: false
 
+RSpec/MessageSpies:
+  Enabled: false
+
 RSpec/LetSetup:
   Enabled: false
 
@@ -36,6 +39,11 @@ RSpec/NestedGroups:
 
 RSpec/ExampleLength:
   Max: 8
+
+RSpec/ContextWording:
+  Enabled: true
+  Exclude:
+  - spec/support/shared_contexts/new_weather_wrapper_context.rb
 
 Layout/LineLength:
   Max: 100
@@ -53,6 +61,12 @@ Metrics/BlockLength:
 Metrics/MethodLength:
   CountComments: false
   Max: 24
+  Exclude:
+  - spec/support/mocks/weather_mocker.rb
+
+Metrics/ClassLength:
+  CountComments: false
+  Max: 100
   Exclude:
   - spec/support/mocks/weather_mocker.rb
 
