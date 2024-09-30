@@ -50,7 +50,7 @@ module Weather
     attr_reader :api_key
 
     def query_params_position(latitude, longitude)
-      "lat=#{latitude}&lon=#{longitude}&appid=#{api_access_token}"
+      "lat=#{latitude}&lon=#{longitude}&units=imperial&appid=#{api_access_token}"
     end
 
     def query_params_city(city, country)

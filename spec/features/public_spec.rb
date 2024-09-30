@@ -7,7 +7,7 @@ RSpec.feature 'Home Page' do
   let(:api_mocker) { WeatherMocker.new }
   let(:latitude) { '-34.901112' }
   let(:longitude) { '-56.164532' }
-  let(:current_temperature) { '295.97' }
+  let(:current_temperature) { '295.97 F' }
   let(:response_api) { 'The current weather is super nice' }
 
   feature 'getting the weather for current location' do
