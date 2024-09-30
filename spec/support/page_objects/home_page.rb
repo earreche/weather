@@ -7,12 +7,14 @@ class HomePage < ApplicationPage
   end
 
   def fill_location(country, state, city)
+    click_button 'Change City'
     select_country(country)
     select_state(state)
     select_city(city)
   end
 
   def select_country(country)
+    page.has_text?('Country', wait: 5)
     select country, from: 'country'
   end
 
@@ -27,23 +29,20 @@ class HomePage < ApplicationPage
   end
 
   def click_get_weather_for_city
-    click_on 'Get weather from this city'
+    click_button 'Get weather from this city'
   end
 
   # Expectations
-  def has_refresh_button?
-    page.has_button?(text: 'Refresh')
+  def has_refresh_text?
+    page.has_text?('Weather should be here, if you are reading this you need to accept ' \
+                   'location permissions, click to Show weather from your location or pick a city')
   end
 
-  def has_weather?(weather)
-    within '#current-response' do
-      page.has_text?(weather, wait: 10)
-    end
+  def has_weather_at_your_location?
+    page.has_text?('Current weather at your location', wait: 10)
   end
 
-  def has_city_weather?(weather)
-    within '#city-response' do
-      page.has_text?(weather, wait: 10)
-    end
+  def has_weather_at_city?(city, country)
+    page.has_text?("Current weather at #{city}, #{country}", wait: 10)
   end
 end

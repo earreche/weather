@@ -19,8 +19,7 @@ module Weather
       raise ArgumentError, 'parametter is missing' if latitude.blank? || longitude.blank?
 
       response = execute_request('get',
-                                 "/data/3.0/onecall/overview?#{query_params_position(latitude,
-                                                                                     longitude)}")
+                                 "/data/3.0/onecall?#{query_params_position(latitude, longitude)}")
       unless success_response?(response)
         error_detail = fetch_error_message(response.parsed_response)
         raise Error, unknown_location_message(latitude, longitude, error_detail)

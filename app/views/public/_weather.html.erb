@@ -1,3 +1,83 @@
-<div id=<%= id %>>
-  <strong><%= weather %></strong>
-</div>
+<turbo-frame id='current-weather'>
+  <div class ="jumbotron p-3 text-white rounded bg-dark text-white">
+
+    <h3>Current weather at <%= location %></h3>
+    <div class='row'>
+      <div class='col-md-6'>
+        <div class="card flex-md-row mb-4 box-shadow h-md-250 md-6">
+          <%= image_tag(weather.current_ico, alt: weather.current_description, size: '150x150') %>
+          <div class="card-body">
+            <h4>
+              <strong>Temperature:</strong>
+              <span><%= weather.current_temperature %>K</span>
+            </h4>
+            <ul class="list-group list-group-flush">
+              <li class="list-group-item">
+                <strong>Feels Like:</strong>
+                <span><%= weather.current_feels_like %>K</span>
+              </li>
+              <li class="list-group-item">
+                <strong>Description:</strong>
+                <span><%= weather.current_description %></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class='col-md-6'>
+        <div class="card flex-md-row mb-4 box-shadow h-md-250 md-6">
+          <ul class="list-group list-group-flush">
+            <% weather.current_weather_details.each do |title, value| %>
+              <li class="list-group-item">
+                <p class="card-text">
+                  <strong><%= title.capitalize %>:</strong>
+                  <span><%= value %></span>
+                </p>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <h5 class='p-3'>Upcoming 5 hours</h5>
+  <div class="card-group">
+    <% weather.group_presenter(initial_filter: weather.hourly).each do |next_weather| %>
+      <div class="card">
+        <%= image_tag(next_weather[:icon], alt: next_weather[:description], size: '100x100') %>
+        <div class="card-body">
+          <h5 class="card-title">
+            <%= next_weather[:time] %>
+          </h5>
+          <p class="card-text mb-1">
+            <span class="text-muted"><%= next_weather[:temp] %></span>
+          </p>
+          <small class="text-muted"><%= next_weather[:description] %></small>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <h5 class='p-3'>Forecast for the next 5 days</h5>
+  <div class="card-group">
+    <% weather.group_presenter(initial_filter: weather.daily, divide_by: '1.day').each do |next_weather| %>
+      <div class="card">
+        <%= image_tag(next_weather[:icon], alt: next_weather[:description], size: '100x100') %>
+        <div class="card-body">
+          <h5 class="card-title">
+            <%= next_weather[:time] %>
+          </h5>
+          <p class="card-text mb-1">
+            <strong> Min</strong>
+            <span><%= next_weather[:min] %></span>
+            |
+            <strong> Max</strong>
+            <span><%= next_weather[:max] %></span>
+          </p>
+          <small class="text-muted"><%= next_weather[:description] %></small>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</turbo-frame>

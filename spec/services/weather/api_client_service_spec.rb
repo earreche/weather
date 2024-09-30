@@ -8,7 +8,7 @@ RSpec.describe Weather::ApiClientService do
   let(:longitude_from_uruguay) { -56.164532 }
   let(:latitude) { latitude_from_uruguay }
   let(:longitude) { longitude_from_uruguay }
-  let(:response_overview) { 'The current weather is super nice' }
+  let(:response_description) { 'broken clouds' }
 
   describe '#query_by_position' do
     subject { described_class.new.query_by_position(latitude: latitude, longitude: longitude) }
@@ -27,7 +27,7 @@ RSpec.describe Weather::ApiClientService do
       end
 
       it 'returns the parsed response' do
-        expect(subject['weather_overview']).to eq(response_overview)
+        expect(subject.dig('current', 'weather', 0, 'description')).to eq(response_description)
       end
     end
 

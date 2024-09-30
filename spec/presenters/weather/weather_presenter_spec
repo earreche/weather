@@ -1,0 +1,85 @@
+# frozen_string_literal: true
+
+require 'rails_helper'
+
+RSpec.describe Weather::WeatherPresenter do
+  include_context :new_weather_wrapper_context
+
+  let(:payload_wrapper) { Weather::PayloadWrapper.new(payload) }
+
+  describe '#current_weather_details' do
+    subject { described_class.new(payload_wrapper).current_weather_details }
+    let(:expected_response) do
+      {
+        "dew_point" => 288.81,
+        "humidity" => 64,
+        "pressure" => 1010,
+      }
+    end
+
+    it { is_expected.to eq(expected_response) }
+  end
+
+  describe '#current_temperature' do
+    subject { described_class.new(payload_wrapper).current_temperature }
+    let(:expected_response) { 295.97 }
+
+    it { is_expected.to eq(expected_response) }
+  end
+
+  describe '#current_feels_like' do
+    subject { described_class.new(payload_wrapper).current_feels_like }
+    let(:expected_response) { 295.98 }
+
+    it { is_expected.to eq(expected_response) }
+  end
+
+  describe '#current_description' do
+    subject { described_class.new(payload_wrapper).current_description }
+    let(:expected_response) { 'broken clouds' }
+
+    it { is_expected.to eq(expected_response) }
+  end
+
+  describe '#group_presenter' do
+    subject do
+      described_class.new(payload_wrapper).group_presenter(
+        amount: 1, drop: 0, divide_by: divide_by, initial_filter: filter
+      )
+    end
+
+    context 'when checking next hours' do
+      let(:divide_by) { '1.hour'}
+      let(:filter) { payload_wrapper.hourly }
+      let(:expected_response) do
+        [
+          {
+            description: "Broken clouds",
+            icon: "weather_icons/04d.png",
+            temp: "295.97 K",
+            time: "In -10 Hours"
+          }
+        ]
+      end
+  
+      it { is_expected.to eq(expected_response) }
+    end
+
+    context 'when checking next days' do
+      let(:divide_by) { '1.day'}
+      let(:filter) { payload_wrapper.daily }
+      let(:expected_response) do
+        [
+          {
+            description: "Broken clouds",
+            icon: "weather_icons/04d.png",
+            temp: "295.97 K",
+            time: "In -10 Hours"
+          }
+        ]
+      end
+  
+      it { is_expected.to eq(expected_response) }
+    end
+  end
+end

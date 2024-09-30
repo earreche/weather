@@ -6,17 +6,17 @@ class PublicController < ApplicationController
   def query_by_position
     render turbo_stream: turbo_stream.replace(
       'current-weather', partial: 'weather', locals: {
-        weather: check_weather_service,
-        id: 'current-response'
+        weather: Weather::WeatherPresenter.new(check_weather_service),
+        location: 'your location'
       }
     )
   end
 
   def query_by_city
     render turbo_stream: turbo_stream.replace(
-      'city-weather', partial: 'weather', locals: {
-        weather: check_weather_service_for_city,
-        id: 'city-response'
+      'current-weather', partial: 'weather', locals: {
+        weather: Weather::WeatherPresenter.new(check_weather_service_for_city),
+        location: "#{params[:city]}, #{params[:country]}"
       }
     )
   end
@@ -49,12 +49,12 @@ class PublicController < ApplicationController
   def check_weather_service
     Weather::CheckWeatherService.new.query_by_position(
       latitude: permitted_params_for_weather[:lat], longitude: permitted_params_for_weather[:long]
-    )['weather_overview']
+    )
   end
 
   def check_weather_service_for_city
     Weather::CheckWeatherForCityService.new.query_weather(
       city: params[:city], country: params[:country]
-    )['weather_overview']
+    )
   end
 end
