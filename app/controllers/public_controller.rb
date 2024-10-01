@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
 class PublicController < ApplicationController
-  def index; end
+  def index
+    @use_cities_gem = ENV['USE_CITIES_GEM'] == 'true'
+    @states = CountriesValue.new.states
+  end
 
   def query_by_position
     render turbo_stream: turbo_stream.replace(
@@ -16,7 +19,7 @@ class PublicController < ApplicationController
     render turbo_stream: turbo_stream.replace(
       'current-weather', partial: 'weather', locals: {
         weather: Weather::WeatherPresenter.new(check_weather_service_for_city),
-        location: "#{params[:city]}, #{params[:country]}"
+        location: "#{params[:city]}, #{params[:country] || 'US'}"
       }
     )
   end
@@ -40,9 +43,9 @@ class PublicController < ApplicationController
 
   def options_for_select
     if permitted_params_for_location[:country].present?
-      CS.states(permitted_params_for_location[:country]).invert
+      CountriesValue.new(permitted_params_for_location[:country]).states
     elsif permitted_params_for_location[:state].present?
-      CS.cities(permitted_params_for_location[:state])
+      StatesValue.new(permitted_params_for_location[:state]).cities
     end
   end
 

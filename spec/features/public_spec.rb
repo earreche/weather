@@ -39,28 +39,53 @@ RSpec.feature 'Home Page' do
   feature 'getting the weather for a selected city', :js do
     subject { home_page.visit_home_page }
 
-    let(:city) { 'Centro' }
-    let(:state) { 'Montevideo Department' }
-    let(:country) { 'Uruguay' }
-    let(:country_code) { 'UY' }
-
     before do
       api_mocker.mock_query_position_for_city_with_success(city: city, country: country_code)
       api_mocker.mock_query_by_position_with_success(latitude: latitude, longitude: longitude)
     end
 
-    scenario 'shows the selected city\'s weather' do
-      subject
+    context 'when not using cities_states gem' do
+      let(:city) { 'Miami' }
+      let(:state) { 'Florida' }
+      let(:country_code) { 'US' }
 
-      expect(home_page).to have_weather_at_your_location
-      expect(home_page).not_to have_weather_at_city(city, country_code)
+      before { stub_const 'ENV', ENV.to_h.merge('USE_CITIES_GEM' => 'false') }
 
-      home_page.fill_location(country, state, city)
-      home_page.click_get_weather_for_city
+      scenario 'shows the selected city\'s weather' do
+        subject
 
-      expect(home_page).to have_weather_at_city(city, country_code)
-      expect(home_page).not_to have_weather_at_your_location
-      expect(home_page).to have_current_temperature(current_temperature)
+        click_button 'Change City'
+
+        expect(home_page).not_to have_country_select
+
+        home_page.select_state(state)
+        home_page.select_city(city)
+        home_page.click_get_weather_for_city
+
+        expect(home_page).to have_weather_at_city(city, country_code)
+        expect(home_page).not_to have_weather_at_your_location
+        expect(home_page).to have_current_temperature(current_temperature)
+      end
+    end
+
+    context 'when using cities_states gem' do
+      let(:city) { 'Centro' }
+      let(:state) { 'Montevideo Department' }
+      let(:country) { 'Uruguay' }
+      let(:country_code) { 'UY' }
+
+      before { stub_const 'ENV', ENV.to_h.merge('USE_CITIES_GEM' => 'true') }
+
+      scenario 'shows the selected city\'s weather' do
+        subject
+
+        home_page.fill_location(country, state, city)
+        home_page.click_get_weather_for_city
+
+        expect(home_page).to have_weather_at_city(city, country_code)
+        expect(home_page).not_to have_weather_at_your_location
+        expect(home_page).to have_current_temperature(current_temperature)
+      end
     end
   end
 end

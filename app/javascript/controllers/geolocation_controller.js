@@ -33,7 +33,9 @@ export default class extends Controller {
   getCityWeather() {
     let params = new URLSearchParams();
     params.append('city', this.cityTarget.value)
-    params.append('country', this.countryTarget.value)
+    if (this.hasCountryTarget) {
+      params.append('country', this.countryTarget.value)
+    }
 
     fetchWithTurbo(`/query_by_city?${params}`);
   }

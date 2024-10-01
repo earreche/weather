@@ -42,17 +42,19 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <div class="mb-2">
-          <%= label_tag :country, 'Country', class: 'form-label' %>
-          <%= select_tag(:country, options_for_select(CS.countries.invert), class: 'form-control',
-            data: { action: 'location-form#countrySelect', geolocation_target: 'country',
-            location_form_target: 'country'}, prompt: 'Please Select') %>
-        </div>
+        <% if @use_cities_gem %>
+          <div class="mb-2">
+            <%= label_tag :country, 'Country', class: 'form-label' %>
+            <%= select_tag(:country, options_for_select(CS.countries.invert), class: 'form-control',
+              data: { action: 'location-form#countrySelect', geolocation_target: 'country',
+              location_form_target: 'country'}, prompt: 'Please Select') %>
+          </div>
+        <% end %>
         <div class="mb-2">
           <%= label_tag :state, 'State', class: 'form-label' %>
-          <%= select_tag(:state, options_for_select([]), class: 'form-control',
+          <%= select_tag(:state, options_for_select(@states), class: 'form-control',
             data: { action: 'location-form#stateSelect', location_form_target: 'state'},
-            disabled: true) %>
+            disabled: @use_cities_gem) %>
         </div>
 
         <div class="mb-2">

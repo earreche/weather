@@ -5,6 +5,7 @@ module Weather
     STORE_TIME = 1.day.freeze
 
     def query_weather(city:, country:)
+      country = CountriesValue.new(country).country
       raise ArgumentError, 'parametter is missing' if city.blank? || country.blank?
 
       @api_response = api_or_stored_response({ city: city, country: country }).first
