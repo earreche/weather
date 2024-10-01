@@ -46,7 +46,7 @@ module Weather
 
     def present_temperatures(weather)
       unless weather['temp'].try(:include?, 'min')
-        return { temp: "#{weather['temp']} #{degree_unit}" } 
+        return { temp: "#{weather['temp']} #{degree_unit}" }
       end
 
       {

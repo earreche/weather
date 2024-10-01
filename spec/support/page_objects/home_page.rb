@@ -49,4 +49,8 @@ class HomePage < ApplicationPage
   def has_current_temperature?(temperature)
     page.has_text?("Temperature: #{temperature}", wait: 10)
   end
+
+  def has_country_select?
+    page.has_text?('Country')
+  end
 end
