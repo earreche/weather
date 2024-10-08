@@ -19,7 +19,7 @@ class PublicController < ApplicationController
     render turbo_stream: turbo_stream.replace(
       'current-weather', partial: 'weather', locals: {
         weather: Weather::WeatherPresenter.new(check_weather_service_for_city),
-        location: "#{params[:city]}, #{params[:country] || 'US'}"
+        location: "#{city}, #{state} - #{country || 'US'}"
       }
     )
   end
@@ -38,7 +38,7 @@ class PublicController < ApplicationController
   end
 
   def permitted_params_for_location
-    params.permit(:country, :state, :target)
+    params.permit(:country, :state, :city, :target)
   end
 
   def options_for_select
@@ -57,7 +57,19 @@ class PublicController < ApplicationController
 
   def check_weather_service_for_city
     Weather::CheckWeatherForCityService.new.query_weather(
-      city: params[:city], country: params[:country]
+      city: city, state: state, country: country
     )
+  end
+
+  def city
+    @city ||= permitted_params_for_location[:city]
+  end
+
+  def state
+    @state ||= permitted_params_for_location[:state]
+  end
+
+  def country
+    @country ||= permitted_params_for_location[:country]
   end
 end

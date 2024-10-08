@@ -33,14 +33,15 @@ module Weather
     # @param city [String]
     # @param country [String]
     # @return the parsed response of the API.
-    def query_position_for_city(city:, country:)
-      raise ArgumentError, 'parametter is missing' if city.blank? || country.blank?
+    def query_position_for_city(city:, state:, country:)
+      raise ArgumentError, 'parametter is missing' if city.blank? || country.blank? || state.blank?
 
-      response = execute_request('get', "/geo/1.0/direct?q=#{query_params_city(city, country)}")
+      query_params = query_params_city(city, state, country)
+      response = execute_request('get', "/geo/1.0/direct?q=#{query_params}")
       raise Error, "Unknown error #{response.parsed_response}" unless success_response?(response)
 
       parsed_response = response.parsed_response
-      raise Error, unknown_city_message(city, country) if parsed_response.empty?
+      raise Error, unknown_city_message(city, state, country) if parsed_response.empty?
 
       parsed_response
     end
@@ -53,8 +54,8 @@ module Weather
       "lat=#{latitude}&lon=#{longitude}&units=imperial&appid=#{api_access_token}"
     end
 
-    def query_params_city(city, country)
-      "#{city},#{country}&limit=1&appid=#{api_access_token}"
+    def query_params_city(city, state, country)
+      "#{city},#{state},#{country}&limit=1&appid=#{api_access_token}"
     end
 
     def api_access_token
@@ -80,8 +81,8 @@ module Weather
         "Details: #{error_detail}"
     end
 
-    def unknown_city_message(city, country)
-      "Unknown city #{city} and country #{country}"
+    def unknown_city_message(city, state, country)
+      "Unknown city #{city} for state #{state} and country #{country}"
     end
   end
 end
