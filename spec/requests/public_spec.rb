@@ -64,7 +64,7 @@ RSpec.describe 'Public' do
       end
 
       it 'calls the weather API with correct parameters and returns ok' do
-        expect_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
+        expect_any_instance_of(Weather::APIClientService).to receive(:query_by_position).with(
           latitude: latitude, longitude: longitude
         ).and_call_original
 
