@@ -39,30 +39,39 @@ RSpec.feature 'Home Page' do
   feature 'getting the weather for a selected city', :js do
     subject { home_page.visit_home_page }
 
+    let(:city) { 'Miami' }
+    let(:state) { 'Florida' }
+    let(:state_code) { 'FL' }
+    let(:country_code) { 'US' }
+
     before do
-      api_mocker.mock_query_position_for_city_with_success(city: city, country: country_code)
+      api_mocker.mock_query_position_for_city_with_success(
+        city: city, state: state_code, country: country_code
+      )
       api_mocker.mock_query_by_position_with_success(latitude: latitude, longitude: longitude)
     end
 
     context 'when not using cities_states gem' do
-      let(:city) { 'Miami' }
-      let(:state) { 'Florida' }
-      let(:country_code) { 'US' }
-
       before { stub_const 'ENV', ENV.to_h.merge('USE_CITIES_GEM' => 'false') }
+
+      scenario 'does not show the country select' do
+        subject
+
+        click_button 'Change City'
+
+        expect(home_page).not_to have_country_select
+      end
 
       scenario 'shows the selected city\'s weather' do
         subject
 
         click_button 'Change City'
 
-        expect(home_page).not_to have_country_select
-
         home_page.select_state(state)
         home_page.select_city(city)
         home_page.click_get_weather_for_city
 
-        expect(home_page).to have_weather_at_city(city, country_code)
+        expect(home_page).to have_weather_at_city(city, state_code, country_code)
         expect(home_page).not_to have_weather_at_your_location
         expect(home_page).to have_current_temperature(current_temperature)
       end
@@ -71,6 +80,7 @@ RSpec.feature 'Home Page' do
     context 'when using cities_states gem' do
       let(:city) { 'Centro' }
       let(:state) { 'Montevideo Department' }
+      let(:state_code) { 'MO' }
       let(:country) { 'Uruguay' }
       let(:country_code) { 'UY' }
 
@@ -82,7 +92,7 @@ RSpec.feature 'Home Page' do
         home_page.fill_location(country, state, city)
         home_page.click_get_weather_for_city
 
-        expect(home_page).to have_weather_at_city(city, country_code)
+        expect(home_page).to have_weather_at_city(city, state_code, country_code)
         expect(home_page).not_to have_weather_at_your_location
         expect(home_page).to have_current_temperature(current_temperature)
       end

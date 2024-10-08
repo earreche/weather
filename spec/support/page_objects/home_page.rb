@@ -42,8 +42,8 @@ class HomePage < ApplicationPage
     page.has_text?('Current weather at your location', wait: 10)
   end
 
-  def has_weather_at_city?(city, country)
-    page.has_text?("Current weather at #{city}, #{country}", wait: 10)
+  def has_weather_at_city?(city, state, country)
+    page.has_text?("Current weather at #{city}, #{state} - #{country}", wait: 10)
   end
 
   def has_current_temperature?(temperature)

@@ -53,7 +53,8 @@
         <div class="mb-2">
           <%= label_tag :state, 'State', class: 'form-label' %>
           <%= select_tag(:state, options_for_select(@states), class: 'form-control',
-            data: { action: 'location-form#stateSelect', location_form_target: 'state'},
+            data: { action: 'location-form#stateSelect', geolocation_target: 'state',
+            location_form_target: 'state'},
             disabled: @use_cities_gem) %>
         </div>
 

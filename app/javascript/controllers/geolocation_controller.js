@@ -16,7 +16,7 @@ const mockedResponse = {
 
 export default class extends Controller {
   static values = { envirorment: String }
-  static targets = ['city', 'country']
+  static targets = ['city', 'state', 'country']
 
   connect() {
     this.getLocation();
@@ -33,6 +33,7 @@ export default class extends Controller {
   getCityWeather() {
     let params = new URLSearchParams();
     params.append('city', this.cityTarget.value)
+    params.append('state', this.stateTarget.value)
     if (this.hasCountryTarget) {
       params.append('country', this.countryTarget.value)
     }

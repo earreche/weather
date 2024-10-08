@@ -87,10 +87,12 @@ RSpec.describe 'Public' do
       end
 
       context 'when country_code is missing' do
-        let(:city) { 'Montevideo' }
+        let(:state) { 'MO' }
+        let(:city) { 'Centro' }
         let(:params) do
           {
-            city: city
+            city: city,
+            state: state
           }
         end
 
@@ -98,23 +100,28 @@ RSpec.describe 'Public' do
       end
 
       context 'when parameters are sent' do
+        let(:state) { 'MO' }
         let(:city) { 'Montevideo' }
         let(:country_code) { 'UY' }
         let(:params) do
           {
             city: city,
+            state: state,
             country: country_code
           }
         end
 
         before do
           api_mocker.mock_query_by_position_with_success(latitude: latitude, longitude: longitude)
-          api_mocker.mock_query_position_for_city_with_success(city: city, country: country_code)
+          api_mocker.mock_query_position_for_city_with_success(
+            city: city, state: state, country: country_code
+          )
         end
 
         it 'calls the weather API with correct parameters and returns ok' do
           expect_any_instance_of(Weather::CheckWeatherForCityService)
-            .to receive(:query_weather).with(city: city, country: country_code).and_call_original
+            .to receive(:query_weather).with(city: city, state: state, country: country_code)
+            .and_call_original
 
           expect(subject).to have_http_status(:ok)
         end
@@ -125,21 +132,26 @@ RSpec.describe 'Public' do
       before { stub_const 'ENV', ENV.to_h.merge('USE_CITIES_GEM' => 'false') }
 
       context 'when parameters are sent' do
+        let(:state) { 'MO' }
         let(:city) { 'Montevideo' }
         let(:params) do
           {
-            city: city
+            city: city,
+            state: state
           }
         end
 
         before do
           api_mocker.mock_query_by_position_with_success(latitude: latitude, longitude: longitude)
-          api_mocker.mock_query_position_for_city_with_success(city: city, country: country_code)
+          api_mocker.mock_query_position_for_city_with_success(
+            city: city, state: state, country: country_code
+          )
         end
 
         it 'calls the weather API with correct parameters and returns ok' do
           expect_any_instance_of(Weather::CheckWeatherForCityService)
-            .to receive(:query_weather).with(city: city, country: nil).and_call_original
+            .to receive(:query_weather).with(city: city, state: state, country: nil)
+            .and_call_original
 
           expect(subject).to have_http_status(:ok)
         end

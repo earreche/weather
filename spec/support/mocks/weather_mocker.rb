@@ -103,10 +103,11 @@ class WeatherMocker
       .to_return(status: 400, body: response_body, headers: default_response_headers)
   end
 
-  def mock_query_position_for_city_with_success(city:, country:)
+  def mock_query_position_for_city_with_success(city:, state:, country:)
     response_body = <<~JSON
       [{
         "city": "#{city}",
+        "state": "#{state}",
         "country": "#{country}",
         "lat": -34.901112,
         "lon": -56.164532
@@ -114,18 +115,22 @@ class WeatherMocker
     JSON
 
     WebMock
-      .stub_request(:get, "#{BASE_API_URL}geo/1.0/direct?q=#{city},#{country}&limit=1&#{app_id}")
+      .stub_request(
+        :get, "#{BASE_API_URL}geo/1.0/direct?q=#{city},#{state},#{country}&limit=1&#{app_id}"
+      )
       .with(body: '', headers: default_api_request_headers)
       .to_return(status: 200, body: response_body, headers: default_response_headers)
   end
 
-  def mock_query_position_for_city_with_no_result(city:, country:)
+  def mock_query_position_for_city_with_no_result(city:, state:, country:)
     response_body = <<~JSON
       []
     JSON
 
     WebMock
-      .stub_request(:get, "#{BASE_API_URL}geo/1.0/direct?q=#{city},#{country}&limit=1&#{app_id}")
+      .stub_request(
+        :get, "#{BASE_API_URL}geo/1.0/direct?q=#{city},#{state},#{country}&limit=1&#{app_id}"
+      )
       .with(body: '', headers: default_api_request_headers)
       .to_return(status: 200, body: response_body, headers: default_response_headers)
   end

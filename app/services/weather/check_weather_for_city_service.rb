@@ -4,11 +4,11 @@ module Weather
   class CheckWeatherForCityService
     STORE_TIME = 1.day.freeze
 
-    def query_weather(city:, country:)
+    def query_weather(city:, state:, country:)
       country = CountriesValue.new(country).country
-      raise ArgumentError, 'parametter is missing' if city.blank? || country.blank?
+      raise ArgumentError, 'parametter is missing' if city.blank? || state.blank? || country.blank?
 
-      @api_response = api_or_stored_response({ city: city, country: country }).first
+      @api_response = api_or_stored_response({ city: city, state: state, country: country }).first
       Weather::CheckWeatherService.new.query_by_position(
         latitude: result_latitude, longitude: result_longitude
       )

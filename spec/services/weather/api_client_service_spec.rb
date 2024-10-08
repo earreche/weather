@@ -49,21 +49,38 @@ RSpec.describe Weather::ApiClientService do
   end
 
   describe '#query_position_for_city' do
-    subject { described_class.new.query_position_for_city(city: city, country: country) }
+    subject do
+      described_class.new.query_position_for_city(city: city, state: state, country: country)
+    end
 
-    context 'when a parameter is missing' do
-      let(:city_is_missing) { [true, false].sample }
-      let(:city) { city_is_missing ? [nil, ''].sample : 'Montevideo' }
-      let(:country) { city_is_missing ? 'UY' : [nil, ''].sample }
+    let(:city) { 'Centro' }
+    let(:state) { 'MO' }
+    let(:country) { 'Uruguay' }
+
+    context 'when city is missing' do
+      let(:city) { nil }
+
+      it { expect { subject }.to raise_error(ArgumentError) }
+    end
+
+    context 'when country is missing' do
+      let(:country) { nil }
+
+      it { expect { subject }.to raise_error(ArgumentError) }
+    end
+
+    context 'when state is missing' do
+      let(:state) { nil }
 
       it { expect { subject }.to raise_error(ArgumentError) }
     end
 
     context 'when sending a valid city and country' do
-      let(:city) { 'Montevideo' }
-      let(:country) { 'Uruguay' }
-
-      before { api_mocker.mock_query_position_for_city_with_success(city: city, country: country) }
+      before do
+        api_mocker.mock_query_position_for_city_with_success(
+          city: city, state: state, country: country
+        )
+      end
 
       it 'returns the parsed response' do
         expect(subject.first['lat']).to eq(latitude_from_uruguay)
@@ -73,11 +90,12 @@ RSpec.describe Weather::ApiClientService do
 
     context 'when an invalid place is given' do
       let(:city) { 'UnknownCity' }
-      let(:country) { 'Uruguay' }
-      let(:error_message) { "Unknown city #{city} and country #{country}" }
+      let(:error_message) { "Unknown city #{city} for state #{state} and country #{country}" }
 
       before do
-        api_mocker.mock_query_position_for_city_with_no_result(city: city, country: country)
+        api_mocker.mock_query_position_for_city_with_no_result(
+          city: city, state: state, country: country
+        )
       end
 
       it { expect { subject }.to raise_error(Weather::Error, error_message) }
