@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Weather::ApiClientService do
+RSpec.describe Weather::APIClientService do
   let(:api_mocker) { WeatherMocker.new }
   let(:latitude_from_uruguay) { -34.901112 }
   let(:longitude_from_uruguay) { -56.164532 }

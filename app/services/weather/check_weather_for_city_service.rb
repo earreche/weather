@@ -17,7 +17,7 @@ module Weather
     private
 
     def api_or_stored_response(params_hash)
-      CacheForApisService.call(api_class: Weather::ApiClientService,
+      CacheForApisService.call(api_class: Weather::APIClientService,
                                method_name: 'query_position_for_city',
                                params_hash: params_hash,
                                store_time: STORE_TIME)

@@ -3,7 +3,7 @@
 module Weather
   class Error < StandardError; end
 
-  class ApiClientService
+  class APIClientService
     include HTTParty
 
     base_uri ENV.fetch('WEATHER_API_BASE')

@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe CacheForApisService do
-  let(:api_class) { Weather::ApiClientService }
+  let(:api_class) { Weather::APIClientService }
   let(:method_name) { 'query_by_position' }
   let(:latitude) { -34.901112 }
   let(:longitude) { -56.164532 }
@@ -15,7 +15,7 @@ RSpec.describe CacheForApisService do
   describe '#call' do
     subject do
       described_class.call(
-        api_class: Weather::ApiClientService, method_name: method_name, params_hash: params_hash,
+        api_class: Weather::APIClientService, method_name: method_name, params_hash: params_hash,
         store_time: class_store_time, payload_wrapper: payload_wrapper
       )
     end
@@ -32,7 +32,7 @@ RSpec.describe CacheForApisService do
           let(:payload_wrapper) { Weather::PayloadWrapper }
 
           it 'returns a wrapped response' do
-            expect_any_instance_of(Weather::ApiClientService).not_to receive(:query_by_position)
+            expect_any_instance_of(Weather::APIClientService).not_to receive(:query_by_position)
             expect(Weather::PayloadWrapper).to receive(:new).with(api_response).and_call_original
 
             expect(subject.current).to eq(api_response['current'])
@@ -40,7 +40,7 @@ RSpec.describe CacheForApisService do
         end
 
         it 'returns the parsed response' do
-          expect_any_instance_of(Weather::ApiClientService).not_to receive(:query_by_position)
+          expect_any_instance_of(Weather::APIClientService).not_to receive(:query_by_position)
 
           expect(subject).to eq(api_response)
         end
@@ -59,7 +59,7 @@ RSpec.describe CacheForApisService do
 
         before do
           Timecop.freeze(Time.zone.now)
-          allow_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
+          allow_any_instance_of(Weather::APIClientService).to receive(:query_by_position).with(
             params_hash
           ).and_return(api_response)
         end
@@ -79,7 +79,7 @@ RSpec.describe CacheForApisService do
         end
 
         it 'returns the parsed response' do
-          expect_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
+          expect_any_instance_of(Weather::APIClientService).to receive(:query_by_position).with(
             params_hash
           ).and_return(api_response)
 
@@ -99,7 +99,7 @@ RSpec.describe CacheForApisService do
           subject
 
           expect(stored_response.reload.params_hash).to eq(params_hash.transform_keys(&:to_s))
-          expect(stored_response.api_client).to eq('Weather::ApiClientService')
+          expect(stored_response.api_client).to eq('Weather::APIClientService')
           expect(stored_response.method_name).to eq('query_by_position')
         end
       end
@@ -108,7 +108,7 @@ RSpec.describe CacheForApisService do
     context 'when the query was not previously stored' do
       before do
         Timecop.freeze(Time.zone.now)
-        allow_any_instance_of(Weather::ApiClientService).to receive(:query_by_position).with(
+        allow_any_instance_of(Weather::APIClientService).to receive(:query_by_position).with(
           params_hash
         ).and_return(api_response)
       end
@@ -127,7 +127,7 @@ RSpec.describe CacheForApisService do
 
           stored_response = StoredResponse.last
           expect(stored_response.params_hash).to eq(params_hash.transform_keys(&:to_s))
-          expect(stored_response.api_client).to eq('Weather::ApiClientService')
+          expect(stored_response.api_client).to eq('Weather::APIClientService')
           expect(stored_response.method_name).to eq('query_by_position')
           expect(stored_response.valid_until).to eq(class_store_time.from_now)
         end
@@ -138,7 +138,7 @@ RSpec.describe CacheForApisService do
 
         stored_response = StoredResponse.last
         expect(stored_response.params_hash).to eq(params_hash.transform_keys(&:to_s))
-        expect(stored_response.api_client).to eq('Weather::ApiClientService')
+        expect(stored_response.api_client).to eq('Weather::APIClientService')
         expect(stored_response.method_name).to eq('query_by_position')
         expect(stored_response.valid_until).to eq(class_store_time.from_now)
       end

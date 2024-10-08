@@ -13,7 +13,7 @@ module Weather
     private
 
     def api_or_stored_response(params_hash)
-      CacheForApisService.call(api_class: Weather::ApiClientService,
+      CacheForApisService.call(api_class: Weather::APIClientService,
                                payload_wrapper: Weather::PayloadWrapper,
                                method_name: 'query_by_position',
                                params_hash: params_hash,

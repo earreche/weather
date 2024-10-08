@@ -7,5 +7,9 @@ Rails.application.routes.draw do
   get '/query_by_city', to: 'public#query_by_city'
   get '/filter_select_location', to: 'public#filter_select_location'
 
+  namespace :api, defaults: { format: :json } do
+    get '/weather', to: '/api/v1/weathers#index'
+  end
+
   root 'public#index'
 end

@@ -54,7 +54,7 @@ RSpec.describe Weather::CheckWeatherForCityService do
 
         context 'when the response is still valid' do
           it 'returns the parsed response' do
-            expect_any_instance_of(Weather::ApiClientService)
+            expect_any_instance_of(Weather::APIClientService)
               .not_to receive(:query_position_for_city)
 
             expect(subject).to eq(wrapped_response)
@@ -95,7 +95,7 @@ RSpec.describe Weather::CheckWeatherForCityService do
           end
 
           it 'returns the parsed response' do
-            expect_any_instance_of(Weather::ApiClientService).to receive(:query_position_for_city)
+            expect_any_instance_of(Weather::APIClientService).to receive(:query_position_for_city)
 
             expect(subject).to eq(wrapped_response)
           end
@@ -112,7 +112,7 @@ RSpec.describe Weather::CheckWeatherForCityService do
         end
 
         it 'returns the parsed response' do
-          expect_any_instance_of(Weather::ApiClientService).to receive(:query_position_for_city)
+          expect_any_instance_of(Weather::APIClientService).to receive(:query_position_for_city)
 
           expect(subject).to eq(wrapped_response)
         end
